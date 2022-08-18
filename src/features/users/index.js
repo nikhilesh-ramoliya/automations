@@ -2,16 +2,32 @@ const {
   signup,
   signin,
   sendMailData,
-  uploadImage,
+  uploadImageData,
 } = require("./users.controller");
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
+const { validateUserToken } = require("../../middleware/validateUser");
 
 const initializeUsersService = (app) => {
+  /**
+   * @swagger
+   * /signup:
+   *    post:
+   *       description:signup user
+   *       response:
+   *          201:
+   *            description:Success
+   */
   app.post("/api/signup", signup);
   app.post("/api/signin", signin);
-  app.post("/api/sendmail", sendMailData);
-  app.post("/api/uploadimage", upload.single("image"), uploadImage);
+  app.post("/api/sendmail", validateUserToken, sendMailData);
+
+  app.post(
+    "/api/uploadimage",
+    validateUserToken,
+    upload.single("image"),
+    uploadImageData
+  );
 };
 
 module.exports = { initializeUsersService };

@@ -3,11 +3,10 @@ const nodemailer = require("nodemailer");
 const sendMail = async (email, title, subjectData, text, template) => {
   try {
     let transporter = nodemailer.createTransport({
-      service: "gmail",
       host: process.env.EMAIL_HOST,
-      //   port: process.env.EMAIL_PORT,
-      //   secure: false,
-      //   name: process.env.EMAIL_NAME,
+      port: process.env.EMAIL_PORT,
+      secure: true,
+      name: process.env.EMAIL_NAME,
       auth: {
         user: process.env.SENDER_EMAIL,
         pass: process.env.EMAIL_PASSWORD,
@@ -20,19 +19,15 @@ const sendMail = async (email, title, subjectData, text, template) => {
       text: text,
       html: template(),
     };
-    const resMail = await transporter.sendMail(
-      messageData,
-      function (err, info) {
-        if (err) {
-          console.log(err);
-        } else {
-          // console.log(info);
-        }
+    await transporter.sendMail(messageData, function (err, info) {
+      if (err) {
+        console.log(err);
+        return false;
+      } else {
+        // console.log(info);
       }
-    );
-    if (resMail) {
-      return;
-    }
+    });
+    return true;
   } catch (err) {
     console.log(err);
   }
