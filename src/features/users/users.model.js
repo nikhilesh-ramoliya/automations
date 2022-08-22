@@ -3,7 +3,9 @@ const { hashPassword, isPasswordValid } = require("./users.service");
 const signupUser = async (data, res) => {
   try {
     const { email, password, confirmPassword } = data;
+    console.log({ email });
     const isEmailExist = await prisma.users.findFirst({ where: { email } });
+    console.log({ isEmailExist });
     if (isEmailExist) {
       return {
         message: "Email already been used in another account.",

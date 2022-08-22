@@ -19,10 +19,9 @@ const sendMail = async (email, title, subjectData, text, template) => {
       text: text,
       html: template(),
     };
-    await transporter.sendMail(messageData, function (err, info) {
+    transporter.sendMail(messageData, function (err, info) {
       if (err) {
         console.log(err);
-        return false;
       } else {
         // console.log(info);
       }

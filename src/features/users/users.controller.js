@@ -11,6 +11,7 @@ const { runInNewContext } = require("vm");
 
 const signup = async (req, res) => {
   try {
+    console.log({ body: req.body });
     const signupRes = await signupUser(req.body, res);
     signupRes
       ? res.status(signupRes.status).json(signupRes)
@@ -53,7 +54,7 @@ const sendMailData = async (req, res) => {
     const template = await Handlebars.compile(source);
     const resEmail = await sendMail(email, title, subjectData, text, template);
     resEmail
-      ? res.status(200).json({ message: "message sent" })
+      ? res.status(200).json({ message: "email sent" })
       : res.status(400).json({ error: "something went wrong" });
   } catch (err) {
     console.log({ err });

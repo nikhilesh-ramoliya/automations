@@ -9,15 +9,6 @@ const upload = multer({ dest: "uploads/" });
 const { validateUserToken } = require("../../middleware/validateUser");
 
 const initializeUsersService = (app) => {
-  /**
-   * @swagger
-   * /signup:
-   *    post:
-   *       description:signup user
-   *       response:
-   *          201:
-   *            description:Success
-   */
   app.post("/api/signup", signup);
   app.post("/api/signin", signin);
   app.post("/api/sendmail", validateUserToken, sendMailData);
