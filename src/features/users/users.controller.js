@@ -11,7 +11,6 @@ const { runInNewContext } = require("vm");
 
 const signup = async (req, res) => {
   try {
-    console.log({ body: req.body });
     const signupRes = await signupUser(req.body, res);
     signupRes
       ? res.status(signupRes.status).json(signupRes)
@@ -30,7 +29,7 @@ const signin = async (req, res) => {
         expires: new Date(Date.now() + 1000 * 60 * 600),
         httpOnly: true,
         sameSite: "none",
-        // secure: true,
+        secure: true,
       });
       res.status(200).json({ message: "signin successfully", token });
     } else {
@@ -52,10 +51,22 @@ const sendMailData = async (req, res) => {
       "utf-8"
     );
     const template = await Handlebars.compile(source);
-    const resEmail = await sendMail(email, title, subjectData, text, template);
-    resEmail
-      ? res.status(200).json({ message: "email sent" })
-      : res.status(400).json({ error: "something went wrong" });
+    const { transporter, messageData } = await sendMail(
+      email,
+      title,
+      subjectData,
+      text,
+      template
+    );
+    transporter.sendMail(messageData, function (err, info) {
+      if (err) {
+        console.log(err);
+        res.status(400).json({ error: "something went wrong" });
+      } else {
+        // console.log(info);
+        res.status(200).json({ message: "email sent" });
+      }
+    });
   } catch (err) {
     console.log({ err });
   }
@@ -64,7 +75,6 @@ const sendMailData = async (req, res) => {
 const uploadImageData = async (req, res) => {
   try {
     const file = req.file;
-    console.log({ file });
     // const uploadFileRes = await uploadFile(req.file);
     // await unlinkFile(file.path);
     res.status(200).json({ message: "image uploaded" });
