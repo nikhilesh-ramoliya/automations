@@ -4,12 +4,14 @@ const { initializeUsersService } = require("./features/users");
 const cookieParser = require("cookie-parser");
 const swaggerUI = require("swagger-ui-express");
 const swaggerOptions = require("./swaggerOptions.json");
+
 const {
   ValidationError,
   EmailExistError,
   InvalidDetailsError,
   UserExistError,
 } = require("./error");
+const { ERROR_CODE } = require("./middleware/errorHandling");
 
 const PORT = process.env.PORT || 7000;
 
@@ -30,8 +32,6 @@ app.use(function (req, res, next) {
   next();
 });
 
-//
-
 initializeUsersService(app);
 app.use((err, req, res, next) => {
   if (!err) {
@@ -39,15 +39,15 @@ app.use((err, req, res, next) => {
     return;
   }
   if (err instanceof ValidationError) {
-    res.status(404).json({ error: err.message });
+    res.status(ERROR_CODE.NOT_FOUND).json({ error: err.message });
   } else if (err instanceof EmailExistError) {
-    res.status(400).json({ error: err.message });
+    res.status(ERROR_CODE.BAD_REQUEST).json({ error: err.message });
   } else if (err instanceof InvalidDetailsError) {
-    res.status(400).json({ error: err.message });
+    res.status(ERROR_CODE.BAD_REQUEST).json({ error: err.message });
   } else if (err instanceof UserExistError) {
-    res.status(404).json({ error: err.message });
+    res.status(ERROR_CODE.NOT_FOUND).json({ error: err.message });
   } else {
-    res.status(500).json({ error: err.message });
+    res.status(ERROR_CODE.INTERNAL_SERVER).json({ error: err.message });
   }
 });
 app.listen(PORT, () => {

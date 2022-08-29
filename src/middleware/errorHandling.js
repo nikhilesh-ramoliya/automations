@@ -2,4 +2,10 @@
 const useErrorHandlingMiddleware = (fn) => (req, res, next) =>
   Promise.resolve(fn(req, res, next)).catch(next);
 
-module.exports = { useErrorHandlingMiddleware };
+const ERROR_CODE = {
+  OK: 200,
+  BAD_REQUEST: 400,
+  NOT_FOUND: 404,
+  INTERNAL_SERVER: 500,
+};
+module.exports = { useErrorHandlingMiddleware, ERROR_CODE };

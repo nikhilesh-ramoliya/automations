@@ -10,7 +10,6 @@ const {
   setUserPassword,
   isUserExistLogin,
 } = require("./users.service");
-const prisma = require("../../db");
 
 const signupUser = async (data) => {
   const { email, password, confirmPassword } = data;
