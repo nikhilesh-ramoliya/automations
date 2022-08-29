@@ -8,10 +8,13 @@ const {
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
 const { validateUserToken } = require("../../middleware/validateUser");
+const {
+  useErrorHandlingMiddleware,
+} = require("../../middleware/errorHandling");
 
 const initializeUsersService = (app) => {
   app.post("/api/signup", signup);
-  app.post("/api/signin", signin);
+  app.post("/api/signin", useErrorHandlingMiddleware(signin));
   app.post("/api/sendmail", validateUserToken, sendMailData);
   app.post(
     "/api/uploadimage",
