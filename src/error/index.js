@@ -26,9 +26,17 @@ class UserExistError extends Error {
   }
 }
 
+class EmailSendError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = EmailSendError;
+  }
+}
+
 module.exports = {
   ValidationError,
   EmailExistError,
   InvalidDetailsError,
   UserExistError,
+  EmailSendError,
 };

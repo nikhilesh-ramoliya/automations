@@ -7,6 +7,8 @@ const {
   validateUserToken,
   useErrorHandlingMiddleware,
 } = require("../../middleware");
+const { EmailSendError } = require("../../error");
+const dayjs = require("dayjs");
 
 const signup = async (req, res) => {
   const { newUser } = await signupUser(req.body);
@@ -41,7 +43,11 @@ const uploadImageData = async (req, res) => {
 
 const sendSalarySleep = async (req, res) => {
   const salaryFile = req.file;
-  const file = reader.readFile(salaryFile.path);
+  const readOpts = {
+    cellText: false,
+    cellDates: true,
+  };
+  const file = reader.readFile(salaryFile.path, readOpts);
   let data = [];
 
   const sheets = file.SheetNames;
@@ -53,8 +59,25 @@ const sendSalarySleep = async (req, res) => {
     });
   }
 
-  // Printing data
-  console.log({ data });
+  let emailNotSendCounter = 0;
+  for (let k = 0; k < data.length; k++) {
+    data[k].Payslip_For_The_Month = dayjs(data[k].Payslip_For_The_Month).format(
+      "DD/MM/YYYY"
+    );
+    data[k].Date_Of_Joining = dayjs(data[k].Date_Of_Joining).format(
+      "DD/MM/YYYY"
+    );
+    console.log({ data: data[k] });
+    let isSend = await sendMail(data[k]["Email"], "salaryslip.hbs", data[k]);
+    if (!isSend) {
+      emailNotSendCounter++;
+    }
+  }
+  if (emailNotSendCounter === 0) {
+    res.send({ message: "salary slip has been sent to all the employee" });
+  } else {
+    throw new EmailSendError("Something went while sending error");
+  }
 };
 
 const initializeUsersService = (app) => {

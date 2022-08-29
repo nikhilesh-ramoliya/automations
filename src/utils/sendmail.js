@@ -3,11 +3,12 @@ const { google } = require("googleapis");
 const path = require("path");
 const fs = require("fs");
 const Handlebars = require("handlebars");
-const { resolve } = require("path");
+const html_to_pdf = require("html-pdf-node");
 
 const sendMail = async (
   email,
   templateName,
+  data,
   title = "sample mail",
   subjectData = "Sample mail",
   text = "Confirm"
@@ -29,6 +30,13 @@ const sendMail = async (
     "utf-8"
   );
   const template = await Handlebars.compile(source);
+  const htmlCode = template(data);
+  const file = { content: htmlCode };
+
+  const options = { format: "A4", printBackground: true };
+
+  const pdfBuffer = await html_to_pdf.generatePdf(file, options);
+  const pdf = pdfBuffer.toString("base64");
 
   // **** sending mail using outh2  ****
   const OAuth2Client = new google.auth.OAuth2(
@@ -36,6 +44,7 @@ const sendMail = async (
     process.env.CLIENT_SECRET,
     process.env.REDIRECT_URI
   );
+
   OAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
   const accessToken = await OAuth2Client.getAccessToken();
 
@@ -56,7 +65,14 @@ const sendMail = async (
     to: email,
     subject: subjectData,
     text: text,
-    html: template(),
+    attachments: [
+      {
+        filename: "salaryslip.pdf",
+        content: pdf,
+        encoding: "base64",
+      },
+    ],
+    // html:
   };
 
   return new Promise((resolve) => {
@@ -64,7 +80,7 @@ const sendMail = async (
       if (err) {
         console.log(err);
       } else {
-        // console.log(info);
+        console.log(info);
         resolve(true);
       }
     });
