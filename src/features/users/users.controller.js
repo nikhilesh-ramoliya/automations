@@ -1,34 +1,34 @@
-const { signupUser, signinUser } = require("./users.model");
+const { signupUser, signinUser } = require("./users.service");
 const { sendMail } = require("../../utils/sendmail");
-const { generateToken } = require("../../utils/jwt-utils");
-const fs = require("fs");
-const util = require("util");
-const unlinkFile = util.promisify(fs.unlink);
-const { uploadFile } = require("../../utils/s3");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 const reader = require("xlsx");
+const {
+  validateUserToken,
+  useErrorHandlingMiddleware,
+} = require("../../middleware");
 
 const signup = async (req, res) => {
-  const signupRes = await signupUser(req.body);
-  res.status(201).json(signupRes);
+  const { newUser } = await signupUser(req.body);
+  res.status(201).json(newUser);
 };
 
 const signin = async (req, res) => {
-  const userData = await signinUser(req.body);
-  const token = await generateToken({ userData });
+  const { token } = await signinUser(req.body);
   res.cookie("jwtToken", token, {
     expires: new Date(Date.now() + 1000 * 60 * 600),
     httpOnly: true,
     sameSite: "none",
     secure: true,
   });
-  res.status(200).json({ message: "signin successfully" });
+  res.json({ message: "SignIn Successful" });
 };
 
 const sendMailData = async (req, res) => {
-  const email = req.user.userData.email;
+  const { email } = req.user.userData;
   const isEmailSend = await sendMail(email, "sampleMail.hbs");
   if (isEmailSend) {
-    res.status(200).json({ message: "message send" });
+    res.json({ message: "Message Sent" });
   }
 };
 
@@ -36,7 +36,7 @@ const uploadImageData = async (req, res) => {
   const file = req.file;
   // const uploadFileRes = await uploadFile(req.file);
   // await unlinkFile(file.path);
-  res.status(200).json({ message: "image uploaded" });
+  res.json({ message: "Image Uploaded" });
 };
 
 const sendSalarySleep = async (req, res) => {
@@ -57,10 +57,25 @@ const sendSalarySleep = async (req, res) => {
   console.log({ data });
 };
 
-module.exports = {
-  signup,
-  signin,
-  sendMailData,
-  uploadImageData,
-  sendSalarySleep,
+const initializeUsersService = (app) => {
+  app.post("/api/signup", useErrorHandlingMiddleware(signup));
+  app.post("/api/signin", useErrorHandlingMiddleware(signin));
+  app.post(
+    "/api/sendmail",
+    useErrorHandlingMiddleware(validateUserToken),
+    useErrorHandlingMiddleware(sendMailData)
+  );
+  app.post(
+    "/api/uploadimage",
+    useErrorHandlingMiddleware(validateUserToken),
+    upload.single("image"),
+    useErrorHandlingMiddleware(uploadImageData)
+  );
+  app.post(
+    "/api/sendSalarySlip",
+    upload.single("salaryData"),
+    useErrorHandlingMiddleware(sendSalarySleep)
+  );
 };
+
+module.exports = { initializeUsersService };

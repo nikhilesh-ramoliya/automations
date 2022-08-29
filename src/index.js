@@ -1,17 +1,9 @@
 require("dotenv").config();
 const express = require("express");
-const { initializeUsersService } = require("./features/users");
+const { initializeUsersService } = require("./features/users/users.controller");
 const cookieParser = require("cookie-parser");
 const swaggerUI = require("swagger-ui-express");
 const swaggerOptions = require("./swaggerOptions.json");
-
-const {
-  ValidationError,
-  EmailExistError,
-  InvalidDetailsError,
-  UserExistError,
-} = require("./error");
-const { ERROR_CODE } = require("./middleware/errorHandling");
 
 const PORT = process.env.PORT || 7000;
 
@@ -37,17 +29,6 @@ app.use((err, req, res, next) => {
   if (!err) {
     next();
     return;
-  }
-  if (err instanceof ValidationError) {
-    res.status(ERROR_CODE.NOT_FOUND).json({ error: err.message });
-  } else if (err instanceof EmailExistError) {
-    res.status(ERROR_CODE.BAD_REQUEST).json({ error: err.message });
-  } else if (err instanceof InvalidDetailsError) {
-    res.status(ERROR_CODE.BAD_REQUEST).json({ error: err.message });
-  } else if (err instanceof UserExistError) {
-    res.status(ERROR_CODE.NOT_FOUND).json({ error: err.message });
-  } else {
-    res.status(ERROR_CODE.INTERNAL_SERVER).json({ error: err.message });
   }
 });
 app.listen(PORT, () => {
