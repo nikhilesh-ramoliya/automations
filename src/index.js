@@ -38,26 +38,17 @@ app.use((err, req, res, next) => {
     next();
     return;
   }
-  if (err instanceof InvalidDetailsError) {
+  if (err instanceof ValidationError) {
+    res.status(404).json({ error: err.message });
+  } else if (err instanceof EmailExistError) {
     res.status(400).json({ error: err.message });
+  } else if (err instanceof InvalidDetailsError) {
+    res.status(400).json({ error: err.message });
+  } else if (err instanceof UserExistError) {
+    res.status(404).json({ error: err.message });
+  } else {
+    res.status(500).json({ error: err.message });
   }
-  // switch (err) {
-  //   case err instanceof ValidationError:
-  //     res.status(404).json({ error: err.message });
-  //     break;
-  //   case err instanceof EmailExistError:
-  //     res.status(400).json({ error: err.message });
-  //     break;
-  //   case err instanceof InvalidDetailsError:
-  //     res.status(400).json({ error: err.message });
-  //     break;
-  //   case err instanceof UserExistError:
-  //     res.status(404).json({ error: err.message });
-  //     break;
-  //   default:
-  //     res.status(500).json({ defaultError: err.message });
-  //     break;
-  // }
 });
 app.listen(PORT, () => {
   console.log(`Listening port ${PORT}`);

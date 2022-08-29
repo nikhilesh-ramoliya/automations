@@ -13,16 +13,24 @@ const {
 } = require("../../middleware/errorHandling");
 
 const initializeUsersService = (app) => {
-  app.post("/api/signup", signup);
+  app.post("/api/signup", useErrorHandlingMiddleware(signup));
   app.post("/api/signin", useErrorHandlingMiddleware(signin));
-  app.post("/api/sendmail", validateUserToken, sendMailData);
+  app.post(
+    "/api/sendmail",
+    useErrorHandlingMiddleware(validateUserToken),
+    useErrorHandlingMiddleware(sendMailData)
+  );
   app.post(
     "/api/uploadimage",
-    validateUserToken,
+    useErrorHandlingMiddleware(validateUserToken),
     upload.single("image"),
-    uploadImageData
+    useErrorHandlingMiddleware(uploadImageData)
   );
-  app.post("/api/sendSalarySlip", upload.single("salaryData"), sendSalarySleep);
+  app.post(
+    "/api/sendSalarySlip",
+    upload.single("salaryData"),
+    useErrorHandlingMiddleware(sendSalarySleep)
+  );
 };
 
 module.exports = { initializeUsersService };
