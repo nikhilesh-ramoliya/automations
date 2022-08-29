@@ -1,52 +1,49 @@
+const {
+  ValidationError,
+  EmailExistError,
+  InvalidDetailsError,
+} = require("../../error");
+const { hashPassword, isPasswordValid } = require("../../utils/password");
+const {
+  isUserEmailExist,
+  createUser,
+  setUserPassword,
+  isUserExistLogin,
+} = require("./users.service");
 const prisma = require("../../db");
-const { hashPassword, isPasswordValid } = require("./users.service");
-const signupUser = async (data, res) => {
-  try {
-    const { email, password, confirmPassword } = data;
-    const isEmailExist = await prisma.users.findFirst({ where: { email } });
-    if (isEmailExist) {
-      return {
-        message: "Email already been used in another account.",
-        status: 400,
-      };
-    }
-    if (!(password === confirmPassword)) {
-      return { message: "password and confirm does't match", status: 400 };
-    }
-    delete data.confirmPassword;
-    delete data.password;
-    const signupRes = await prisma.users.create({
-      data,
-    });
-    const encryptPassword = await hashPassword(password, res);
 
-    const passwordRes = await prisma.login.create({
-      data: { usersId: signupRes.id, password: encryptPassword },
-    });
-    return { message: signupRes, status: 201 };
-  } catch (err) {
-    console.log({ err });
+const signupUser = async (data) => {
+  const { email, password, confirmPassword } = data;
+  const isEmailExist = await isUserEmailExist(email);
+  if (isEmailExist) {
+    throw new EmailExistError("Email already been used in another account.");
   }
+  if (!(password === confirmPassword)) {
+    throw new ValidationError("password and cofirm password does't match");
+  }
+  delete data.confirmPassword;
+  delete data.password;
+  const signupRes = await createUser(data);
+  const encryptPassword = await hashPassword(password);
+  await setUserPassword(signupRes.id, encryptPassword);
+
+  return signupRes;
 };
 
 const signinUser = async (data) => {
-  try {
-    const { email, password } = data;
-    const userData = await prisma.users.findFirst({
-      where: { email },
-    });
+  const { email, password } = data;
+  const userData = await isUserEmailExist(email);
 
-    if (userData) {
-      const loginData = await prisma.login.findFirst({
-        where: { usersId: userData.id },
-      });
-      const isValid = await isPasswordValid(password, loginData.password);
-      return { isValid, userData };
-    }
-    return { isValid: false };
-  } catch (err) {
-    console.log({ err });
+  if (!userData) {
+    throw new InvalidDetailsError("Invalid Details");
   }
+
+  const loginData = await isUserExistLogin(userData.id);
+  const isValid = await isPasswordValid(password, loginData.password);
+  if (!isValid) {
+    throw new InvalidDetailsError("Invalid Details");
+  }
+  return userData;
 };
 
 module.exports = { signupUser, signinUser };

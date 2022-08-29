@@ -2,7 +2,6 @@ require("dotenv").config();
 const express = require("express");
 const { initializeUsersService } = require("./features/users");
 const cookieParser = require("cookie-parser");
-// const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUI = require("swagger-ui-express");
 const swaggerOptions = require("./swaggerOptions.json");
 
@@ -26,21 +25,31 @@ app.use(function (req, res, next) {
 });
 
 //
+
+initializeUsersService(app);
 app.use((err, req, res, next) => {
   // console.log({ err1: err });
+  console.log("hello world............................................");
   if (!err) {
     next();
     return;
   }
+  console.log({ er: "Error got" });
+  console.log({ err });
 
-  res.status(500).json(err || { message: "Internal server error" });
+  switch (err) {
+    case err instanceof ValidationError:
+      res.status(404).json({ error: err.message });
+    case err instanceof EmailExistError:
+      res.status(400).json({ error: err.message });
+    case err instanceof InvalidDetailsError:
+      res.status(400).json({ error: err.message });
+    case err instanceof UserExistError:
+      res.status(404).json({ error: err.message });
+    default:
+      res.status(500).json(err || { message: "Internal server error" });
+  }
 });
-
-// app.get("/test", (req, res) => {
-//   res.status(201).json({ message: "hello" });
-// });
-initializeUsersService(app);
-
 app.listen(PORT, () => {
   console.log(`Listening port ${PORT}`);
 });

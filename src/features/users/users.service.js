@@ -1,22 +1,30 @@
-const bcryptjs = require("bcryptjs");
+const prisma = require("../../db");
 
-const hashPassword = async (password, res) => {
-  try {
-    const passwordHash = await bcryptjs.hash(password, 12);
-    return passwordHash;
-  } catch (err) {
-    console.log({ err });
-    res.status(500).json({ error: "Internal Error" });
-  }
+const isUserEmailExist = async (email) => {
+  return await prisma.users.findFirst({ where: { email } });
 };
 
-const isPasswordValid = async (loginPassword, dbPassword) => {
-  try {
-    const isValid = await bcryptjs.compare(loginPassword, dbPassword);
-    return isValid;
-  } catch (err) {
-    console.log({ err });
-  }
+const createUser = async (data) => {
+  return await prisma.users.create({
+    data,
+  });
 };
 
-module.exports = { hashPassword, isPasswordValid };
+const setUserPassword = async (usersId, password) => {
+  return await prisma.login.create({
+    data: { usersId, password },
+  });
+};
+
+const isUserExistLogin = async (usersId) => {
+  return await prisma.login.findFirst({
+    where: { usersId },
+  });
+};
+
+module.exports = {
+  isUserEmailExist,
+  createUser,
+  setUserPassword,
+  isUserExistLogin,
+};
