@@ -82,26 +82,6 @@
         }
       }
     },
-    "/sendSalarySlip": {
-      "post": {
-        "summary": "Upload salary data",
-        "description": "Upload salary data using multer",
-        "parameters": [
-          {
-            "in": "formData",
-            "name": "salaryData",
-            "type": "file",
-            "required": true,
-            "description": "Select File to upload image"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/sendmail": {
       "post": {
         "summary": "Email send",
