@@ -3,9 +3,17 @@ const {
   EmailExistError,
   InvalidDetailsError,
   UserExistError,
-} = require("../error");
+} = require('../error');
 
-// Use this function like this app.post("/api/signin", useErrorHandlingMiddleware(signin)) because express handler won't understand the promise is pending or resolved so have to wrap with this useErrorHandlingMiddleware().
+const ERROR_CODE = {
+  OK: 200,
+  BAD_REQUEST: 400,
+  NOT_FOUND: 404,
+  INTERNAL_SERVER: 500,
+};
+// Use this function like this app.post("/api/signin", useErrorHandlingMiddleware(signin))
+// because express handler won't understand the promise is pending or resolved so have to
+// wrap with this useErrorHandlingMiddleware().
 const useErrorHandlingMiddleware = (fn) => (req, res, next) =>
   Promise.resolve(fn(req, res, next)).catch((err) => {
     if (err instanceof ValidationError) {
@@ -22,10 +30,4 @@ const useErrorHandlingMiddleware = (fn) => (req, res, next) =>
     next(err);
   });
 
-const ERROR_CODE = {
-  OK: 200,
-  BAD_REQUEST: 400,
-  NOT_FOUND: 404,
-  INTERNAL_SERVER: 500,
-};
 module.exports = { useErrorHandlingMiddleware, ERROR_CODE };

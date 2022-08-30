@@ -1,14 +1,16 @@
-const { signupUser, signinUser } = require("./users.service");
-const { sendMail } = require("../../utils/sendmail");
-const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
-const reader = require("xlsx");
+const multer = require('multer');
+const dayjs = require('dayjs');
+const reader = require('xlsx');
+const { signupUser, signinUser } = require('./users.service');
+const { sendMail } = require('../../utils/sendmail');
+
+const upload = multer({ dest: 'uploads/' });
+
 const {
   validateUserToken,
   useErrorHandlingMiddleware,
-} = require("../../middleware");
-const { EmailSendError } = require("../../error");
-const dayjs = require("dayjs");
+} = require('../../middleware');
+const { EmailSendError } = require('../../error');
 
 const signup = async (req, res) => {
   const { newUser } = await signupUser(req.body);
@@ -17,28 +19,21 @@ const signup = async (req, res) => {
 
 const signin = async (req, res) => {
   const { token } = await signinUser(req.body);
-  res.cookie("jwtToken", token, {
+  res.cookie('jwtToken', token, {
     expires: new Date(Date.now() + 1000 * 60 * 600),
     httpOnly: true,
-    sameSite: "none",
+    sameSite: 'none',
     secure: true,
   });
-  res.json({ message: "SignIn Successful" });
+  res.json({ message: 'SignIn Successful' });
 };
 
 const sendMailData = async (req, res) => {
   const { email } = req.user.userData;
-  const isEmailSend = await sendMail(email, "sampleMail.hbs");
+  const isEmailSend = await sendMail({ email, template: 'sampleMail.hbs' });
   if (isEmailSend) {
-    res.json({ message: "Message Sent" });
+    res.json({ message: 'Message Sent' });
   }
-};
-
-const uploadImageData = async (req, res) => {
-  const file = req.file;
-  // const uploadFileRes = await uploadFile(req.file);
-  // await unlinkFile(file.path);
-  res.json({ message: "Image Uploaded" });
 };
 
 const sendSalarySleep = async (req, res) => {
@@ -48,55 +43,53 @@ const sendSalarySleep = async (req, res) => {
     cellDates: true,
   };
   const file = reader.readFile(salaryFile.path, readOpts);
-  let data = [];
+  const data = [];
 
   const sheets = file.SheetNames;
 
   for (let i = 0; i < sheets.length; i++) {
     const temp = reader.utils.sheet_to_json(file.Sheets[file.SheetNames[i]]);
-    temp.forEach((res) => {
-      data.push(res);
+    temp.forEach((datum) => {
+      data.push(datum);
     });
   }
 
-  let emailNotSendCounter = 0;
-  for (let k = 0; k < data.length; k++) {
-    data[k].Payslip_For_The_Month = dayjs(data[k].Payslip_For_The_Month).format(
-      "DD/MM/YYYY"
+  try {
+    await Promise.all(
+      data.map((item) => {
+        const employee = { ...item };
+        employee.Payslip_For_The_Month = dayjs(
+          employee.Payslip_For_The_Month
+        ).format('DD/MM/YYYY');
+        employee.Date_Of_Joining = dayjs(employee.Date_Of_Joining).format(
+          'DD/MM/YYYY'
+        );
+        return sendMail({
+          email: employee.Email,
+          template: 'salaryslip.hbs',
+          data: employee,
+        });
+      })
     );
-    data[k].Date_Of_Joining = dayjs(data[k].Date_Of_Joining).format(
-      "DD/MM/YYYY"
-    );
-    console.log({ data: data[k] });
-    let isSend = await sendMail(data[k]["Email"], "salaryslip.hbs", data[k]);
-    if (!isSend) {
-      emailNotSendCounter++;
-    }
+  } catch (err) {
+    throw new EmailSendError('Something went while sending error');
   }
-  if (emailNotSendCounter === 0) {
-    res.send({ message: "salary slip has been sent to all the employee" });
-  } else {
-    throw new EmailSendError("Something went while sending error");
-  }
+
+  res.send({ message: 'salary slip has been sent to all the employee' });
 };
 
 const initializeUsersService = (app) => {
-  app.post("/api/signup", useErrorHandlingMiddleware(signup));
-  app.post("/api/signin", useErrorHandlingMiddleware(signin));
+  app.post('/api/signup', useErrorHandlingMiddleware(signup));
+  app.post('/api/signin', useErrorHandlingMiddleware(signin));
   app.post(
-    "/api/sendmail",
+    '/api/sendmail',
     useErrorHandlingMiddleware(validateUserToken),
     useErrorHandlingMiddleware(sendMailData)
   );
+
   app.post(
-    "/api/uploadimage",
-    useErrorHandlingMiddleware(validateUserToken),
-    upload.single("image"),
-    useErrorHandlingMiddleware(uploadImageData)
-  );
-  app.post(
-    "/api/sendSalarySlip",
-    upload.single("salaryData"),
+    '/api/sendSalarySlip',
+    upload.single('salaryData'),
     useErrorHandlingMiddleware(sendSalarySleep)
   );
 };
