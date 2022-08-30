@@ -1,5 +1,5 @@
-const S3 = require("aws-sdk/clients/s3");
-const fs = require("fs");
+const S3 = require('aws-sdk/clients/s3');
+const fs = require('fs');
 
 const bucketName = process.env.AWS_BUCKET_NAME;
 const region = process.env.AWS_BUCKET_REGION;
@@ -32,11 +32,8 @@ const getFileStream = async (fileKey) => {
 };
 
 const multipleImageUpload = async (files) => {
-  const response = [];
-  for (let i = 0; i < files.length; i++) {
-    response.push(await uploadFile(files[i]));
-  }
-  return response;
+  const responses = await Promise.all(files.map((file) => uploadFile(file)));
+  return responses;
 };
 
 module.exports = { uploadFile, getFileStream, multipleImageUpload };

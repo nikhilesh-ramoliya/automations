@@ -1,25 +1,29 @@
-const prisma = require("../../db");
+const prisma = require('../../db');
 
 const isUserEmailExist = async (email) => {
-  return await prisma.users.findFirst({ where: { email } });
+  const existingUser = await prisma.users.findFirst({ where: { email } });
+  return { existingUser };
 };
 
 const createUser = async (data) => {
-  return await prisma.users.create({
+  const newUser = await prisma.users.create({
     data,
   });
+  return { newUser };
 };
 
 const setUserPassword = async (usersId, password) => {
-  return await prisma.login.create({
+  const userPassword = await prisma.login.create({
     data: { usersId, password },
   });
+  return { userPassword };
 };
 
 const isUserExistLogin = async (usersId) => {
-  return await prisma.login.findFirst({
+  const existingUser = await prisma.login.findFirst({
     where: { usersId },
   });
+  return existingUser;
 };
 
 module.exports = {

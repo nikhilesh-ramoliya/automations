@@ -1,13 +1,12 @@
-const { verifyToken } = require("../utils/jwt-utils");
-const { UserExistError } = require("../error");
+const { verifyToken } = require('../utils/jwt-utils');
+const { UserExistError } = require('../error');
 
 const authenticate = async (token) => {
   const tokenData = await verifyToken(token);
   if (tokenData) {
     return tokenData;
-  } else {
-    return false;
   }
+  return false;
 };
 
 const validateUserToken = async (req, res, next) => {

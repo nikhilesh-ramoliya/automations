@@ -1,17 +1,15 @@
-const nodemailer = require("nodemailer");
-const { google } = require("googleapis");
-const path = require("path");
-const fs = require("fs");
-const Handlebars = require("handlebars");
-const { resolve } = require("path");
+const nodemailer = require('nodemailer');
+const { google } = require('googleapis');
+const path = require('path');
+const fs = require('fs');
+const Handlebars = require('handlebars');
 
-const sendMail = async (
+const sendMail = async ({
   email,
-  templateName,
-  title = "sample mail",
-  subjectData = "Sample mail",
-  text = "Confirm"
-) => {
+  template,
+  subject = 'Sample mail',
+  text = 'Confirm',
+}) => {
   // **** sending mail using email and password ****
   // let transporter = nodemailer.createTransport({
   //   host: process.env.EMAIL_HOST,
@@ -25,10 +23,10 @@ const sendMail = async (
   // });
 
   const source = await fs.readFileSync(
-    path.join(__dirname, `../template/${templateName}`),
-    "utf-8"
+    path.join(__dirname, `../template/${template}`),
+    'utf-8'
   );
-  const template = await Handlebars.compile(source);
+  const templateInstance = await Handlebars.compile(source);
 
   // **** sending mail using outh2  ****
   const OAuth2Client = new google.auth.OAuth2(
@@ -40,9 +38,9 @@ const sendMail = async (
   const accessToken = await OAuth2Client.getAccessToken();
 
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    service: 'gmail',
     auth: {
-      type: "OAuth2",
+      type: 'OAuth2',
       user: process.env.EMAIL,
       accessToken,
       clientId: process.env.CLIENT_ID,
@@ -54,18 +52,17 @@ const sendMail = async (
   const messageData = {
     from: process.env.SENDER_EMAIL,
     to: email,
-    subject: subjectData,
-    text: text,
-    html: template(),
+    subject,
+    text,
+    html: templateInstance(),
   };
 
   return new Promise((resolve) => {
-    transporter.sendMail(messageData, function (err, info) {
+    transporter.sendMail(messageData, (err, info) => {
       if (err) {
         console.log(err);
       } else {
-        // console.log(info);
-        resolve(true);
+        resolve(info);
       }
     });
   });
