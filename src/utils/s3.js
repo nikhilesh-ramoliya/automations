@@ -12,6 +12,11 @@ const s3 = new S3({
   secretAccessKey,
 });
 
+/**
+ * It will upload file to AWS S3
+ * @param {file} file To uplaod
+ * @returns uploaded file data like : location etc..
+ */
 const uploadFile = (file) => {
   const fileStream = fs.createReadStream(file.path);
   const uploadParams = {
@@ -22,6 +27,11 @@ const uploadFile = (file) => {
   return s3.upload(uploadParams).promise();
 };
 
+/**
+ * It will get image from AWS S3
+ * @param {string} fileKey To find image
+ * @returns file
+ */
 const getFileStream = async (fileKey) => {
   const downloadParams = {
     Key: fileKey,
@@ -31,6 +41,11 @@ const getFileStream = async (fileKey) => {
   return file;
 };
 
+/**
+ * It will upload multiple file to AWS S3
+ * @param {file} files To upload files
+ * @returns uploaded files data like : location etc..
+ */
 const multipleImageUpload = async (files) => {
   const responses = await Promise.all(files.map((file) => uploadFile(file)));
   return responses;
