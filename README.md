@@ -28,12 +28,7 @@ The Base Backend project provides basic functionality to build backend nodejs se
 
 ## features
 
-- Each folder inside this directory contains 4 files.
-- swagger.json for swagger ui configuration. This file is mandatory when we create any new feature.
-- Controller file for handling logic behind validating request parameters and sending appropiate response. It also contain a function named with initializeFeatureName in which routes are defined.
-- Model file as we're using prisma we don't have to write models as the models are already defined in schema.prisma file. But in this project it includes queries like insert, get user, etc.
-- Service file contains some business logic.
-- To create a new feature, for e.g, to add products then create `products` directory inside features.
+- Please refer Readme file inside each feature directory.
 
 ## middleware
 
@@ -61,3 +56,24 @@ The Base Backend project provides basic functionality to build backend nodejs se
 ```bash
 npx jsdoc src/**/*.js src/**/**/*.js
 ```
+
+# ENV Variables
+
+- DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test-database
+- JWT_TOKEN_SECRET= - It can be any token secret
+
+### Get this by signing into aws amazon s3 dashboard.
+
+- AWS_BUCKET_NAME=
+- AWS_BUCKET_REGION=
+- AWS_ACCESS_KEY=
+- AWS_SECRET_KEY=
+
+### To get the following environment variables visit this link : https://dev.to/chandrapantachhetri/sending-emails-securely-using-node-js-nodemailer-smtp-gmail-and-oauth2-g3a
+
+- sender_email=
+- REFRESH_TOKEN=
+- email=sender@email.com
+- CLIENT_SECRET=
+- CLIENT_ID=
+- REDIRECT_URI=
