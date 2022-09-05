@@ -4,6 +4,11 @@ const path = require('path');
 const fs = require('fs');
 const Handlebars = require('handlebars');
 
+/**
+ * It will send mail
+ * @param {object} params Object of email,template,subject,text
+ * @returns email response data
+ */
 const sendMail = async ({
   email,
   template,
