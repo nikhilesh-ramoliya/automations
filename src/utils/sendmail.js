@@ -81,6 +81,7 @@ const sendMail = async ({
       if (err) {
         console.log(err);
       } else {
+        console.log({ info });
         resolve(info);
       }
     });

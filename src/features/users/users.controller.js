@@ -54,22 +54,28 @@ const sendSalarySleep = async (req, res) => {
     });
   }
 
+  const finalData = data.map((item) => {
+    const employee = { ...item };
+    employee.Payslip_For_The_Month = dayjs(
+      employee.Payslip_For_The_Month
+    ).format('MMMM-YYYY');
+    employee.Date_Of_Joining = dayjs(employee.Date_Of_Joining).format(
+      'DD/MM/YYYY'
+    );
+    return employee;
+  });
+
+  console.log({ finalData });
+
   try {
     await Promise.all(
-      data.map((item) => {
-        const employee = { ...item };
-        employee.Payslip_For_The_Month = dayjs(
-          employee.Payslip_For_The_Month
-        ).format('DD/MM/YYYY');
-        employee.Date_Of_Joining = dayjs(employee.Date_Of_Joining).format(
-          'DD/MM/YYYY'
-        );
-        return sendMail({
+      finalData.map((employee) =>
+        sendMail({
           email: employee.Email,
           template: 'salaryslip.hbs',
           data: employee,
-        });
-      })
+        })
+      )
     );
   } catch (err) {
     throw new EmailSendError('Something went while sending error');
