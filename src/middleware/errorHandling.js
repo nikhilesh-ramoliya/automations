@@ -11,9 +11,13 @@ const ERROR_CODE = {
   NOT_FOUND: 404,
   INTERNAL_SERVER: 500,
 };
-// Use this function like this app.post("/api/signin", useErrorHandlingMiddleware(signin))
-// because express handler won't understand the promise is pending or resolved so have to
-// wrap with this useErrorHandlingMiddleware().
+
+/**
+ * It will handle all errors and send response with appropiate message to client
+ * @param {function} fn To handle error
+ * @returns pass control to next function
+ *
+ */
 const useErrorHandlingMiddleware = (fn) => (req, res, next) =>
   Promise.resolve(fn(req, res, next)).catch((err) => {
     if (err instanceof ValidationError) {
