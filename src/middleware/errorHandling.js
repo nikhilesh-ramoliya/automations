@@ -11,7 +11,6 @@ const ERROR_CODE = {
   NOT_FOUND: 404,
   INTERNAL_SERVER: 500,
 };
-
 /**
  * It will handle all errors and send response with appropiate message to client
  * @param {function} fn To handle error
