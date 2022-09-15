@@ -3,6 +3,7 @@ const { google } = require('googleapis');
 const path = require('path');
 const fs = require('fs');
 const Handlebars = require('handlebars');
+const htmlToPdf = require('html-pdf-node');
 
 /**
  * It will send mail
@@ -11,8 +12,10 @@ const Handlebars = require('handlebars');
  */
 const sendMail = async ({
   email,
-  template,
-  subject = 'Sample mail',
+  pdfTemplate,
+  htmlTemplate,
+  data,
+  subject = 'Salary Slip',
   text = 'Confirm',
 }) => {
   // **** sending mail using email and password ****
@@ -26,19 +29,13 @@ const sendMail = async ({
   //     pass: process.env.EMAIL_PASSWORD,
   //   },
   // });
-
-  const source = await fs.readFileSync(
-    path.join(__dirname, `../template/${template}`),
-    'utf-8'
-  );
-  const templateInstance = await Handlebars.compile(source);
-
   // **** sending mail using outh2  ****
   const OAuth2Client = new google.auth.OAuth2(
     process.env.CLIENT_ID,
     process.env.CLIENT_SECRET,
     process.env.REDIRECT_URI
   );
+
   OAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
   const accessToken = await OAuth2Client.getAccessToken();
 
@@ -54,13 +51,58 @@ const sendMail = async ({
     },
   });
 
-  const messageData = {
-    from: process.env.SENDER_EMAIL,
-    to: email,
-    subject,
-    text,
-    html: templateInstance(),
-  };
+  let messageData;
+
+  if (pdfTemplate && data) {
+    const source = await fs.readFileSync(
+      path.join(__dirname, `../template/${pdfTemplate}`),
+      'utf-8'
+    );
+    const templateInstance = await Handlebars.compile(source);
+
+    const htmlCode = templateInstance(data);
+    const file = { content: htmlCode };
+
+    const options = { format: 'A4', printBackground: true };
+
+    const pdfBuffer = await htmlToPdf.generatePdf(file, options);
+    const pdf = pdfBuffer.toString('base64');
+
+    messageData = {
+      from: process.env.SENDER_EMAIL,
+      to: email,
+      subject,
+      text,
+      attachments: [
+        {
+          filename: 'data.pdf',
+          content: pdf,
+          encoding: 'base64',
+        },
+      ],
+    };
+  } else if (htmlTemplate && data) {
+    const source = await fs.readFileSync(
+      path.join(__dirname, `../template/${htmlTemplate}`),
+      'utf-8'
+    );
+    const templateInstance = await Handlebars.compile(source);
+
+    messageData = {
+      from: process.env.SENDER_EMAIL,
+      to: email,
+      subject,
+      text,
+      html: templateInstance(data),
+    };
+  } else {
+    messageData = {
+      from: process.env.SENDER_EMAIL,
+      to: email,
+      subject,
+      text,
+    };
+  }
 
   return new Promise((resolve) => {
     transporter.sendMail(messageData, (err, info) => {
