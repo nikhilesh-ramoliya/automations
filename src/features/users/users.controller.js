@@ -41,7 +41,7 @@ const sendMailData = async (req, res) => {
   }
 };
 
-const sendSalarySleep = async (req, res) => {
+const sendSalarySlip = async (req, res) => {
   const salaryFile = req.file;
   const readOpts = {
     cellText: false,
@@ -69,6 +69,9 @@ const sendSalarySleep = async (req, res) => {
     );
     return employee;
   });
+  // .filter((item) => item.Emp_ID === 23);
+
+  console.log({ data, finalData });
 
   try {
     await Promise.all(
@@ -99,7 +102,7 @@ const initializeUsersService = (app) => {
   app.post(
     '/api/sendSalarySlip',
     upload.single('salaryData'),
-    useErrorHandlingMiddleware(sendSalarySleep)
+    useErrorHandlingMiddleware(sendSalarySlip)
   );
 };
 
