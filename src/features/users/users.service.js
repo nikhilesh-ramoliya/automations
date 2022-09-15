@@ -41,12 +41,13 @@ const signinUser = async (data) => {
     throw new InvalidDetailsError('Invalid Details');
   }
 
-  const loginData = await isUserExistLogin(userData.id);
+  const loginData = await isUserExistLogin(userData.existingUser.id);
+
   const isValid = await isPasswordValid(password, loginData.password);
   if (!isValid) {
     throw new InvalidDetailsError('Invalid Details');
   }
-  const token = await generateToken({ userData });
+  const token = await generateToken(userData.existingUser);
   return { token };
 };
 

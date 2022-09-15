@@ -5,7 +5,6 @@ const { signupUser, signinUser } = require('./users.service');
 const { sendMail } = require('../../utils/sendmail');
 
 const upload = multer({ dest: 'uploads/' });
-
 const {
   validateUserToken,
   useErrorHandlingMiddleware,
@@ -29,8 +28,14 @@ const signin = async (req, res) => {
 };
 
 const sendMailData = async (req, res) => {
-  const { email } = req.user.userData;
-  const isEmailSend = await sendMail({ email, template: 'sampleMail.hbs' });
+  const { email } = req.user;
+  const isEmailSend = await sendMail({
+    email,
+    text: 'hello world',
+    subject: 'test email',
+    pdfTemplate: 'sampleMail.hbs',
+    data: { title: 'test title' },
+  });
   if (isEmailSend) {
     res.json({ message: 'Message Sent' });
   }

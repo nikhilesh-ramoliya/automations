@@ -3,7 +3,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const swaggerUI = require('swagger-ui-express');
 const { initializeUsersService } = require('./features/users/users.controller');
-const swaggerOptions = require('./swaggerOptions.json');
+const { getSwaggerOptions } = require('./utils/swagger');
 
 const PORT = process.env.PORT || 7000;
 
@@ -11,7 +11,11 @@ const app = express();
 app.use(cookieParser());
 app.use(express.json());
 
-app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerOptions));
+const getData = async () => {
+  const swaggerOptions = await getSwaggerOptions();
+  app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerOptions));
+};
+getData();
 
 // set header for cookies
 app.use((req, res, next) => {
@@ -30,6 +34,7 @@ app.use((err, req, res, next) => {
     next();
   }
 });
+
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Listening port ${PORT}`);

@@ -3,11 +3,17 @@ const { google } = require('googleapis');
 const path = require('path');
 const fs = require('fs');
 const Handlebars = require('handlebars');
-const html_to_pdf = require('html-pdf-node');
+const htmlToPdf = require('html-pdf-node');
 
+/**
+ * It will send mail
+ * @param {object} params Object of email,template,subject,text
+ * @returns email response data
+ */
 const sendMail = async ({
   email,
-  template,
+  pdfTemplate,
+  htmlTemplate,
   data,
   subject = 'Salary Slip',
   text = 'Confirm',
@@ -23,21 +29,6 @@ const sendMail = async ({
   //     pass: process.env.EMAIL_PASSWORD,
   //   },
   // });
-
-  const source = await fs.readFileSync(
-    path.join(__dirname, `../template/${template}`),
-    'utf-8'
-  );
-  const templateInstance = await Handlebars.compile(source);
-
-  const htmlCode = templateInstance(data);
-  const file = { content: htmlCode };
-
-  const options = { format: 'A4', printBackground: true };
-
-  const pdfBuffer = await html_to_pdf.generatePdf(file, options);
-  const pdf = pdfBuffer.toString('base64');
-
   // **** sending mail using outh2  ****
   const OAuth2Client = new google.auth.OAuth2(
     process.env.CLIENT_ID,
@@ -60,28 +51,64 @@ const sendMail = async ({
     },
   });
 
-  const messageData = {
-    from: process.env.SENDER_EMAIL,
-    to: email,
-    subject,
-    text,
-    attachments: [
-      {
-        filename: 'salaryslip.pdf',
-        content: pdf,
-        encoding: 'base64',
-      },
-    ],
+  let messageData;
 
-    // html:
-  };
+  if (pdfTemplate && data) {
+    const source = await fs.readFileSync(
+      path.join(__dirname, `../template/${pdfTemplate}`),
+      'utf-8'
+    );
+    const templateInstance = await Handlebars.compile(source);
+
+    const htmlCode = templateInstance(data);
+    const file = { content: htmlCode };
+
+    const options = { format: 'A4', printBackground: true };
+
+    const pdfBuffer = await htmlToPdf.generatePdf(file, options);
+    const pdf = pdfBuffer.toString('base64');
+
+    messageData = {
+      from: process.env.SENDER_EMAIL,
+      to: email,
+      subject,
+      text,
+      attachments: [
+        {
+          filename: 'data.pdf',
+          content: pdf,
+          encoding: 'base64',
+        },
+      ],
+    };
+  } else if (htmlTemplate && data) {
+    const source = await fs.readFileSync(
+      path.join(__dirname, `../template/${htmlTemplate}`),
+      'utf-8'
+    );
+    const templateInstance = await Handlebars.compile(source);
+
+    messageData = {
+      from: process.env.SENDER_EMAIL,
+      to: email,
+      subject,
+      text,
+      html: templateInstance(data),
+    };
+  } else {
+    messageData = {
+      from: process.env.SENDER_EMAIL,
+      to: email,
+      subject,
+      text,
+    };
+  }
 
   return new Promise((resolve) => {
     transporter.sendMail(messageData, (err, info) => {
       if (err) {
         console.log(err);
       } else {
-        console.log({ info });
         resolve(info);
       }
     });
