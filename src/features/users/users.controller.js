@@ -70,14 +70,12 @@ const sendSalarySleep = async (req, res) => {
     return employee;
   });
 
-  console.log({ finalData });
-
   try {
     await Promise.all(
       finalData.map((employee) =>
         sendMail({
           email: employee.Email,
-          template: 'salaryslip.hbs',
+          pdfTemplate: 'salaryslip.hbs',
           data: employee,
         })
       )
