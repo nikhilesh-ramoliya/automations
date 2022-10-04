@@ -75,7 +75,7 @@ const sendMail = async ({
       text,
       attachments: [
         {
-          filename: 'data.pdf',
+          filename: 'salary.pdf',
           content: pdf,
           encoding: 'base64',
         },

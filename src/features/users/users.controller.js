@@ -80,6 +80,10 @@ const sendSalarySlip = async (req, res) => {
           email: employee.Email,
           pdfTemplate: 'salaryslip.hbs',
           data: employee,
+          subject: `Salary Slip ${dayjs().format('MMMM-YYYY')}`,
+          text: `You can find salary slip for ${dayjs().format(
+            'MMMM-YYYY'
+          )} as an attachment. Thanks.`,
         })
       )
     );
@@ -90,6 +94,51 @@ const sendSalarySlip = async (req, res) => {
   res.send({ message: 'salary slip has been sent to all the employee' });
 };
 
+const sendTemplateMail = async (req, res) => {
+  const salaryFile = req.file;
+  const readOpts = {
+    cellText: false,
+    cellDates: true,
+  };
+  const file = reader.readFile(salaryFile.path, readOpts);
+  const data = [];
+
+  const sheets = file.SheetNames;
+
+  for (let i = 0; i < sheets.length; i++) {
+    const temp = reader.utils.sheet_to_json(file.Sheets[file.SheetNames[i]]);
+    temp.forEach((datum) => {
+      data.push(datum);
+    });
+  }
+
+  const finalData = data.map((item) => {
+    const employee = { ...item };
+    // you can manipulate data here if you want
+    return employee;
+  });
+  // .filter((item) => item.Emp_ID === 23);
+
+  console.log({ data, finalData });
+
+  try {
+    await Promise.all(
+      finalData.map((employee) =>
+        sendMail({
+          email: employee.Email,
+          htmlTemplate: 'emailTemplate.hbs',
+          data: {
+            firstName: employee.Name ? employee.Name.split(' ').shift() : '',
+          },
+        })
+      )
+    );
+  } catch (err) {
+    throw new EmailSendError('Something went while sending error');
+  }
+
+  res.send({ message: 'salary slip has been sent to all the employee' });
+};
 const initializeUsersService = (app) => {
   app.post('/api/signup', useErrorHandlingMiddleware(signup));
   app.post('/api/signin', useErrorHandlingMiddleware(signin));
@@ -103,6 +152,11 @@ const initializeUsersService = (app) => {
     '/api/sendSalarySlip',
     upload.single('salaryData'),
     useErrorHandlingMiddleware(sendSalarySlip)
+  );
+  app.post(
+    '/api/send-mail',
+    upload.single('userData'),
+    useErrorHandlingMiddleware(sendTemplateMail)
   );
 };
 
