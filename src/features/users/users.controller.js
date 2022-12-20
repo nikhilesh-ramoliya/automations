@@ -122,17 +122,15 @@ const sendTemplateMail = async (req, res) => {
   console.log({ data, finalData });
 
   try {
-    await Promise.all(
-      finalData.map((employee) =>
-        sendMail({
-          email: employee.Email,
-          htmlTemplate: 'emailTemplate.hbs',
-          data: {
-            firstName: employee.Name ? employee.Name.split(' ').shift() : '',
-          },
-        })
-      )
-    );
+    finalData.forEach(async (employee) => {
+      await sendMail({
+        email: employee.Email,
+        htmlTemplate: 'emailTemplate.hbs',
+        data: {
+          firstName: employee.Name ? employee.Name.split(' ').shift() : '',
+        },
+      });
+    });
   } catch (err) {
     throw new EmailSendError('Something went while sending error');
   }
