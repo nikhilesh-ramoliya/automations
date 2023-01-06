@@ -89,10 +89,8 @@ const sendSalarySlip = async (req, res) => {
           email: employee.Email,
           pdfTemplate: 'salaryslipV2.hbs',
           data: employee,
-          subject: `Salary Slip ${dayjs().format('MMMM-YYYY')}`,
-          text: `You can find salary slip for ${dayjs().format(
-            'MMMM-YYYY'
-          )} as an attachment. Thanks.`,
+          subject: `Salary Slip ${employee.Payslip_For_The_Month}`,
+          text: `You can find salary slip for ${employee.Payslip_For_The_Month} as an attachment. Thanks.`,
         })
       )
     );
