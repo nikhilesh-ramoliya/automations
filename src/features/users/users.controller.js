@@ -1,6 +1,7 @@
 const multer = require('multer');
 const dayjs = require('dayjs');
 const reader = require('xlsx');
+const converter = require('number-to-words');
 const { signupUser, signinUser } = require('./users.service');
 const { sendMail } = require('../../utils/sendmail');
 
@@ -64,21 +65,29 @@ const sendSalarySlip = async (req, res) => {
     employee.Payslip_For_The_Month = dayjs(
       employee.Payslip_For_The_Month
     ).format('MMMM-YYYY');
-    employee.Date_Of_Joining = dayjs(employee.Date_Of_Joining).format(
+
+    const incrementDateOfJoining = employee.Date_Of_Joining;
+    incrementDateOfJoining.setDate(incrementDateOfJoining.getDate() + 1);
+    employee.Date_Of_Joining = dayjs(incrementDateOfJoining).format(
       'DD/MM/YYYY'
     );
+
+    const incrementPaymentDate = employee.Payment_Date;
+    incrementPaymentDate.setDate(incrementPaymentDate.getDate() + 1);
+
+    employee.Payment_Date = dayjs(incrementPaymentDate).format('DD/MM/YYYY');
+    employee.net_salary_in_words = converter.toWords(employee.Net_Salary);
     return employee;
   });
   // .filter((item) => item.Emp_ID === 23);
 
-  console.log({ data, finalData });
-
+  // console.log({ data, finalData });
   try {
     await Promise.all(
       finalData.map((employee) =>
         sendMail({
           email: employee.Email,
-          pdfTemplate: 'salaryslip.hbs',
+          pdfTemplate: 'salaryslipV2.hbs',
           data: employee,
           subject: `Salary Slip ${dayjs().format('MMMM-YYYY')}`,
           text: `You can find salary slip for ${dayjs().format(
