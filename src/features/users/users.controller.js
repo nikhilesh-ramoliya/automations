@@ -65,17 +65,10 @@ const sendSalarySlip = async (req, res) => {
     employee.Payslip_For_The_Month = dayjs(
       employee.Payslip_For_The_Month
     ).format('MMMM-YYYY');
-
-    const incrementDateOfJoining = employee.Date_Of_Joining;
-    incrementDateOfJoining.setDate(incrementDateOfJoining.getDate() + 1);
-    employee.Date_Of_Joining = dayjs(incrementDateOfJoining).format(
+    employee.Date_Of_Joining = dayjs(employee.Date_Of_Joining).format(
       'DD/MM/YYYY'
     );
-
-    const incrementPaymentDate = employee.Payment_Date;
-    incrementPaymentDate.setDate(incrementPaymentDate.getDate() + 1);
-
-    employee.Payment_Date = dayjs(incrementPaymentDate).format('DD/MM/YYYY');
+    employee.Payment_Date = dayjs(employee.Payment_Date).format('DD/MM/YYYY');
     employee.net_salary_in_words = converter.toWords(employee.Net_Salary);
     return employee;
   });
@@ -83,6 +76,7 @@ const sendSalarySlip = async (req, res) => {
 
   // console.log({ data, finalData });
   try {
+    // console.log({ finalData });
     await Promise.all(
       finalData.map((employee) =>
         sendMail({

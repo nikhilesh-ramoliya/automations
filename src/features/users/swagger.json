@@ -8,80 +8,6 @@
   "basePath": "/api",
   "schemes": ["http", "https"],
   "paths": {
-    "/signup": {
-      "post": {
-        "summary": "Signup user",
-        "description": "Signup user using user details",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "description": "Enter user data",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "fullName": { "type": "string" },
-                "email": { "type": "string" },
-                "password": { "type": "string" },
-                "confirmPassword": { "type": "string" }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/signin": {
-      "post": {
-        "summary": "Signin User",
-        "description": "Signin user by entering valid data",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "description": "Enter email and password",
-            "required": false,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "email": { "type": "string" },
-                "password": { "type": "string" }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/uploadimage": {
-      "post": {
-        "summary": "Upload Image",
-        "description": "upload image using multer",
-        "parameters": [
-          {
-            "in": "formData",
-            "name": "image",
-            "type": "file",
-            "required": true,
-            "description": "Select File to upload image"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/sendSalarySlip": {
       "post": {
         "summary": "Upload salary data",
@@ -95,18 +21,6 @@
             "description": "Select File to upload image"
           }
         ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/sendmail": {
-      "post": {
-        "summary": "Email send",
-        "description": "Send email using nodemailer",
-        "parameters": [],
         "responses": {
           "200": {
             "description": "OK"
