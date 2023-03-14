@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <style>
+      * {
+        box-sizing: border-box;
+      }
       body {
         font-family: system-ui, system-ui, sans-serif;
         font-size: 81.25%;
@@ -16,7 +19,9 @@
       td {
         border: 1px solid black;
         border-collapse: collapse;
+        padding: 7px;
       }
+
       .maindiv {
         width: 100%;
         display: flex;
@@ -57,6 +62,29 @@
         font-weight: bolder;
       }
       .employeeName {
+        font-weight: bold;
+      }
+      .text-align-right {
+        text-align: right;
+      }
+      .text-align-center {
+        text-align: center;
+      }
+      .leave-container {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .leave-container div {
+        padding: 7px;
+        border-right: 1px solid black;
+        text-align: right;
+      }
+      .leave-container div:last-child {
+        padding: 7px;
+        border-right: none;
+      }
+      .bold-text {
         font-weight: bold;
       }
     </style>
@@ -133,14 +161,24 @@
 
         <tr>
           <td rowspan="2" class="employeeName">Leave Balance:</td>
-          <td class="employeeName">Total Leave</td>
-          <td class="employeeName">Leave Taken</td>
-          <td class="employeeName">Available Balance</td>
+          <td colspan="3" style="padding: 0">
+            <div class="leave-container">
+              <div class="bold-text">Total Leave</div>
+              <div class="bold-text">Leave Taken</div>
+              <div class="bold-text">Leave Taken In Month</div>
+              <div class="bold-text">Available Balance</div>
+            </div>
+          </td>
         </tr>
         <tr>
-          <td>{{Total_Leave}}</td>
-          <td>{{Leave_Taken}}</td>
-          <td>{{Available_Balance }}</td>
+          <td colspan="3" style="padding: 0">
+            <div class="leave-container">
+              <div>{{Total_Leave}}</div>
+              <div>{{Leave_Taken}}</div>
+              <div>{{Leave_Taken_In_Month}}</div>
+              <div>{{Available_Balance}}</div>
+            </div>
+          </td>
         </tr>
         <tr class="Earnings">
           <td class="employeeName">Earnings</td>
@@ -150,57 +188,57 @@
         </tr>
         <tr>
           <td>Basic & DA</td>
-          <td>{{Basic_DA}}</td>
+          <td class="text-align-right">{{Basic_DA}}</td>
           <td>Leaves</td>
-          <td>{{Leaves}}</td>
+          <td class="text-align-right">{{Leaves}}</td>
         </tr>
         <tr>
           <td>HRA</td>
-          <td>{{HRA }}</td>
+          <td class="text-align-right">{{HRA }}</td>
           <td>Provident Fund</td>
-          <td>{{Provident_Fund}}</td>
+          <td class="text-align-right">{{Provident_Fund}}</td>
         </tr>
         <tr>
           <td>Other Allow.</td>
-          <td>{{Other_Allowances }}</td>
+          <td class="text-align-right">{{Other_Allowances }}</td>
           <td>Professional Tax</td>
-          <td>{{Professional_Tax}}</td>
+          <td class="text-align-right">{{Professional_Tax}}</td>
         </tr>
         <tr>
           <td>Conveyance</td>
-          <td>{{Conveyance}}</td>
+          <td class="text-align-right">{{Conveyance}}</td>
           <td>TDS/IT</td>
-          <td>{{TDS_IT}}</td>
+          <td class="text-align-right">{{TDS_IT}}</td>
         </tr>
         <tr>
           <td>Special Allow.</td>
-          <td>{{Special_Allowances}}</td>
+          <td class="text-align-right">{{Special_Allowances}}</td>
           <td></td>
           <td></td>
         </tr>
         <tr>
           <td>Fixed Bonus</td>
-          <td>{{Fixed_Bonus}}</td>
+          <td class="text-align-right">{{Fixed_Bonus}}</td>
           <td></td>
           <td></td>
         </tr>
         <tr>
           <td>Perfor. Bonus</td>
-          <td>{{Performance_Bonus}}</td>
+          <td class="text-align-right">{{Performance_Bonus}}</td>
           <td></td>
           <td></td>
         </tr>
         <tr class="TotalAddition">
           <td class="employeeName">Total Addition</td>
-          <td>{{Total_Addition}}</td>
+          <td class="text-align-right">{{Total_Addition}}</td>
           <td class="employeeName">Total Deductions</td>
-          <td>{{Total_Deductions}}</td>
+          <td class="text-align-right">{{Total_Deductions}}</td>
         </tr>
         <tr>
           <td></td>
           <td></td>
           <td class="netSalary">NET SALARY</td>
-          <td class="netSalary">{{Net_Salary}}</td>
+          <td class="netSalary text-align-right">{{Net_Salary}}</td>
         </tr>
         <tr>
           <td></td>
