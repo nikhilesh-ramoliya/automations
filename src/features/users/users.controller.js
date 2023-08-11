@@ -77,17 +77,16 @@ const sendSalarySlip = async (req, res) => {
   // console.log({ data, finalData });
   try {
     // console.log({ finalData });
-    await Promise.all(
-      finalData.map((employee) =>
-        sendMail({
+    
+      for(employee of finalData) {
+        await sendMail({
           email: employee.Email,
           pdfTemplate: 'salaryslipV2.hbs',
           data: employee,
           subject: `Salary Slip ${employee.Payslip_For_The_Month}`,
           text: `You can find salary slip for ${employee.Payslip_For_The_Month} as an attachment. Thanks.`,
         })
-      )
-    );
+      }
   } catch (err) {
     throw new EmailSendError('Something went while sending error');
   }
