@@ -19,6 +19,7 @@ const ERROR_CODE = {
  */
 const useErrorHandlingMiddleware = (fn) => (req, res, next) =>
   Promise.resolve(fn(req, res, next)).catch((err) => {
+    console.log({ err });
     if (err instanceof ValidationError) {
       res.status(ERROR_CODE.NOT_FOUND).json({ error: err.message });
     } else if (err instanceof EmailExistError) {

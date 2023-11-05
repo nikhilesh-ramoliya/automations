@@ -60,33 +60,35 @@ const sendSalarySlip = async (req, res) => {
     });
   }
 
-  const finalData = data.map((item) => {
-    const employee = { ...item };
-    employee.Payslip_For_The_Month = dayjs(
-      employee.Payslip_For_The_Month
-    ).format('MMMM-YYYY');
-    employee.Date_Of_Joining = dayjs(employee.Date_Of_Joining).format(
-      'DD/MM/YYYY'
-    );
-    employee.Payment_Date = dayjs(employee.Payment_Date).format('DD/MM/YYYY');
-    employee.net_salary_in_words = converter.toWords(employee.Net_Salary);
-    return employee;
-  });
+  const finalData = data
+    .filter((item) => item.Emp_ID)
+    .map((item) => {
+      const employee = { ...item };
+      employee.Payslip_For_The_Month = dayjs(
+        employee.Payslip_For_The_Month
+      ).format('MMMM-YYYY');
+      employee.Date_Of_Joining = dayjs(employee.Date_Of_Joining).format(
+        'DD/MM/YYYY'
+      );
+      employee.Payment_Date = dayjs(employee.Payment_Date).format('DD/MM/YYYY');
+      employee.net_salary_in_words = converter.toWords(employee.Net_Salary);
+      return employee;
+    });
   // .filter((item) => item.Emp_ID === 23);
 
   // console.log({ data, finalData });
   try {
     // console.log({ finalData });
-    
-      for(employee of finalData) {
-        await sendMail({
-          email: employee.Email,
-          pdfTemplate: 'salaryslipV2.hbs',
-          data: employee,
-          subject: `Salary Slip ${employee.Payslip_For_The_Month}`,
-          text: `You can find salary slip for ${employee.Payslip_For_The_Month} as an attachment. Thanks.`,
-        })
-      }
+
+    for (employee of finalData) {
+      await sendMail({
+        email: employee.Email,
+        pdfTemplate: 'salaryslipV2.hbs',
+        data: employee,
+        subject: `Salary Slip ${employee.Payslip_For_The_Month}`,
+        text: `You can find salary slip for ${employee.Payslip_For_The_Month} as an attachment. Thanks.`,
+      });
+    }
   } catch (err) {
     throw new EmailSendError('Something went while sending error');
   }
