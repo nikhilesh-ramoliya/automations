@@ -52,6 +52,7 @@ const sendMail = async ({
   });
 
   let messageData;
+  const cc = 'hr@lanatussystems.com';
 
   if (pdfTemplate && data) {
     const source = await fs.readFileSync(
@@ -80,6 +81,7 @@ const sendMail = async ({
           encoding: 'base64',
         },
       ],
+      cc,
     };
   } else if (htmlTemplate && data) {
     const source = await fs.readFileSync(
@@ -94,6 +96,7 @@ const sendMail = async ({
       subject,
       text,
       html: templateInstance(data),
+      cc,
     };
   } else {
     messageData = {
@@ -101,6 +104,7 @@ const sendMail = async ({
       to: email,
       subject,
       text,
+      cc,
     };
   }
 
