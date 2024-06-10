@@ -54,8 +54,13 @@ const sendSalarySlip = async (req, res) => {
   const sheets = file.SheetNames;
 
   for (let i = 0; i < sheets.length; i++) {
-    const temp = reader.utils.sheet_to_json(file.Sheets[file.SheetNames[i]]);
-    temp.forEach((datum) => {
+    const sheetData = reader.utils.sheet_to_json(
+      file.Sheets[file.SheetNames[i]],
+      {
+        raw: false,
+      }
+    );
+    sheetData.forEach((datum) => {
       data.push(datum);
     });
   }
@@ -65,11 +70,13 @@ const sendSalarySlip = async (req, res) => {
     .map((item) => {
       const employee = { ...item };
       employee.Payslip_For_The_Month = dayjs(
-        employee.Payslip_For_The_Month
-      ).format('MMMM-YYYY');
-      employee.Date_Of_Joining = dayjs(employee.Date_Of_Joining).format(
+        employee.Payslip_For_The_Month,
         'DD/MM/YYYY'
-      );
+      ).format('MMMM-YYYY');
+      employee.Date_Of_Joining = dayjs(
+        employee.Date_Of_Joining,
+        'DD/MM/YYY'
+      ).format('DD/MM/YYYY');
       employee.Payment_Date = dayjs(employee.Payment_Date).format('DD/MM/YYYY');
       employee.net_salary_in_words = converter.toWords(employee.Net_Salary);
       return employee;
@@ -80,7 +87,9 @@ const sendSalarySlip = async (req, res) => {
   try {
     // console.log({ finalData });
 
-    for (employee of finalData) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const employee of finalData) {
+      // eslint-disable-next-line no-await-in-loop
       await sendMail({
         email: employee.Email,
         pdfTemplate: 'salaryslipV2.hbs',
