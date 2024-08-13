@@ -92,7 +92,7 @@ const sendSalarySlip = async (req, res) => {
       // eslint-disable-next-line no-await-in-loop
       await sendMail({
         email: employee.Email,
-        pdfTemplate: 'salaryslipV2.hbs',
+        pdfTemplate: 'salaryslip.hbs',
         data: employee,
         subject: `Salary Slip ${employee.Payslip_For_The_Month}`,
         text: `You can find salary slip for ${employee.Payslip_For_The_Month} as an attachment. Thanks.`,
