@@ -95,7 +95,18 @@ const sendSalarySlip = async (req, res) => {
         pdfTemplate: 'salaryslip.hbs',
         data: employee,
         subject: `Salary Slip ${employee.Payslip_For_The_Month}`,
-        text: `You can find salary slip for ${employee.Payslip_For_The_Month} as an attachment. Thanks.`,
+        text: `Dear ${employee.Name},
+
+Please find attached your salary slip for ${employee.Payslip_For_The_Month}. This document provides a detailed breakdown of your earnings and deductions for the mentioned period.
+
+For any questions or clarifications, please feel free to reach out to the HR department.
+
+Thank you for your continued dedication and hard work.
+
+Best regards,
+HR Department
+Lanatus Systems LLP
+`,
       });
     }
   } catch (err) {
