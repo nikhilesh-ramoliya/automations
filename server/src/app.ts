@@ -1,15 +1,18 @@
+import 'dotenv/config';
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { ApiResponse } from './types/index.js'; 
 import scheduledJobRoutes from './routes/scheduledJobs.route.js';
+import { initDatabase } from './db/init.js';
+import pool from './config/database.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 const corsOptions = {
     origin: '*',
@@ -21,6 +24,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+
+initDatabase().catch(console.error);
 
 app.use('/api/v1/scheduled', scheduledJobRoutes);
 
@@ -36,6 +41,12 @@ app.use((req: Request, res: Response<ApiResponse<null>>, next: NextFunction) => 
         error: 'Not Found',
         message: 'Endpoint not found'
     });
+});
+
+process.on('SIGTERM', async () => {
+    console.log('SIGTERM signal received: closing HTTP server');
+    await pool.end();
+    process.exit(0);
 });
 
 app.listen(PORT, () => {

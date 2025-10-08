@@ -7,7 +7,7 @@ export interface ScheduledJob {
   active: boolean;
 }
 
-const API_BASE_URL = 'http://localhost:3000/api/v1/scheduled';
+const API_BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 export const scheduledJobsApi = {
   getScheduledJobs: async (): Promise<ScheduledJob[]> => {
