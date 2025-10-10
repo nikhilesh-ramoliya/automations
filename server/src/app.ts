@@ -3,8 +3,9 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { ApiResponse } from './types/index.js'; 
-import scheduledJobRoutes from './routes/scheduledJobs.route.js';
+import logsRoutes from './routes/logs.route.js';
+import { ApiResponse } from './types/index.js';
+import scheduledJobsRoutes from './routes/scheduledJobs.route.js';
 import { initDatabase } from './db/init.js';
 import pool from './config/database.js';
 
@@ -25,9 +26,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-initDatabase().catch(console.error);
+// initDatabase().catch(console.error);
 
-app.use('/api/v1/scheduled', scheduledJobRoutes);
+app.use('/api/v1/scheduled', scheduledJobsRoutes);
+app.use('/api/v1', logsRoutes);
 
 app.use(express.static(path.join(__dirname, '../../client/dist')));
 
