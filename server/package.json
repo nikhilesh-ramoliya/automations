@@ -8,13 +8,16 @@
     "build": "tsc",
     "watch": "tsc -w",
     "dev": "nodemon dist/app.js",
-    "server": "concurrently \"npm run watch\" \"npm run dev\""
+    "server": "concurrently \"npm run watch\" \"npm run dev\"",
+    "prisma:generate": "prisma generate",
+    "prisma:studio": "prisma studio"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@prisma/client": "^6.17.1",
     "@types/cors": "^2.8.18",
     "@types/express": "^5.0.2",
     "concurrently": "^9.1.2",
@@ -26,6 +29,7 @@
   },
   "devDependencies": {
     "@types/pg": "^8.15.5",
+    "prisma": "^6.17.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }

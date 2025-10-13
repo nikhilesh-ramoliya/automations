@@ -3,17 +3,16 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import scheduledJobsRoutes from './routes/scheduledJobs.route.js';
 import logsRoutes from './routes/logs.route.js';
 import { ApiResponse } from './types/index.js';
-import scheduledJobsRoutes from './routes/scheduledJobs.route.js';
-import { initDatabase } from './db/init.js';
-import pool from './config/database.js';
+import prisma from './config/prisma.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = Number(process.env.PORT) || 3000;
 
 const corsOptions = {
     origin: '*',
@@ -26,7 +25,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// initDatabase().catch(console.error);
+// Test database connection
+prisma.$connect()
+    .then(() => console.log('Connected to database via Prisma'))
+    .catch((error: Error) => console.error('Database connection failed:', error));
 
 app.use('/api/v1/scheduled', scheduledJobsRoutes);
 app.use('/api/v1', logsRoutes);
@@ -45,9 +47,16 @@ app.use((req: Request, res: Response<ApiResponse<null>>, next: NextFunction) => 
     });
 });
 
+// Graceful shutdown
 process.on('SIGTERM', async () => {
     console.log('SIGTERM signal received: closing HTTP server');
-    await pool.end();
+    await prisma.$disconnect();
+    process.exit(0);
+});
+
+process.on('SIGINT', async () => {
+    console.log('SIGINT signal received: closing HTTP server');
+    await prisma.$disconnect();
     process.exit(0);
 });
 

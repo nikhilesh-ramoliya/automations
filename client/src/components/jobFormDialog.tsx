@@ -24,11 +24,11 @@ interface JobFormDialogProps {
 
 const JobFormDialog = ({ open, onClose, onSubmit, job, isLoading }: JobFormDialogProps) => {
   const [formData, setFormData] = useState<Partial<ScheduledJob>>({
-    job_name: '',
+    jobName: '',
     description: '',
-    api_url: '',
-    api_method: 'GET',
-    cron_expression: '',
+    apiUrl: '',
+    apiMethod: 'GET',
+    cronExpression: '',
     active: true,
   });
 
@@ -39,11 +39,11 @@ const JobFormDialog = ({ open, onClose, onSubmit, job, isLoading }: JobFormDialo
       setFormData(job);
     } else {
       setFormData({
-        job_name: '',
+        jobName: '',
         description: '',
-        api_url: '',
-        api_method: 'GET',
-        cron_expression: '',
+        apiUrl: '',
+        apiMethod: 'GET',
+        cronExpression: '',
         active: true,
       });
     }
@@ -53,22 +53,22 @@ const JobFormDialog = ({ open, onClose, onSubmit, job, isLoading }: JobFormDialo
   const validate = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.job_name?.trim()) {
-      newErrors.job_name = 'Job name is required';
+    if (!formData.jobName?.trim()) {
+      newErrors.jobName = 'Job name is required';
     }
 
-    if (!formData.api_url?.trim()) {
-      newErrors.api_url = 'API URL is required';
+    if (!formData.apiUrl?.trim()) {
+      newErrors.apiUrl = 'API URL is required';
     } else {
       try {
-        new URL(formData.api_url);
+        new URL(formData.apiUrl);
       } catch {
-        newErrors.api_url = 'Invalid URL format';
+        newErrors.apiUrl = 'Invalid URL format';
       }
     }
 
-    if (!formData.cron_expression?.trim()) {
-      newErrors.cron_expression = 'Cron expression is required';
+    if (!formData.cronExpression?.trim()) {
+      newErrors.cronExpression = 'Cron expression is required';
     }
 
     setErrors(newErrors);
@@ -88,10 +88,10 @@ const JobFormDialog = ({ open, onClose, onSubmit, job, isLoading }: JobFormDialo
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
           <TextField
             label="Job Name"
-            value={formData.job_name}
-            onChange={(e) => setFormData({ ...formData, job_name: e.target.value })}
-            error={!!errors.job_name}
-            helperText={errors.job_name}
+            value={formData.jobName}
+            onChange={(e) => setFormData({ ...formData, jobName: e.target.value })}
+            error={!!errors.jobName}
+            helperText={errors.jobName}
             required
             fullWidth
           />
@@ -107,10 +107,10 @@ const JobFormDialog = ({ open, onClose, onSubmit, job, isLoading }: JobFormDialo
 
           <TextField
             label="API URL"
-            value={formData.api_url}
-            onChange={(e) => setFormData({ ...formData, api_url: e.target.value })}
-            error={!!errors.api_url}
-            helperText={errors.api_url}
+            value={formData.apiUrl}
+            onChange={(e) => setFormData({ ...formData, apiUrl: e.target.value })}
+            error={!!errors.apiUrl}
+            helperText={errors.apiUrl}
             required
             fullWidth
           />
@@ -118,8 +118,8 @@ const JobFormDialog = ({ open, onClose, onSubmit, job, isLoading }: JobFormDialo
           <TextField
             select
             label="HTTP Method"
-            value={formData.api_method}
-            onChange={(e) => setFormData({ ...formData, api_method: e.target.value })}
+            value={formData.apiMethod}
+            onChange={(e) => setFormData({ ...formData, apiMethod: e.target.value })}
             fullWidth
           >
             <MenuItem value="GET">GET</MenuItem>
@@ -131,10 +131,10 @@ const JobFormDialog = ({ open, onClose, onSubmit, job, isLoading }: JobFormDialo
 
           <TextField
             label="Cron Expression"
-            value={formData.cron_expression}
-            onChange={(e) => setFormData({ ...formData, cron_expression: e.target.value })}
-            error={!!errors.cron_expression}
-            helperText={errors.cron_expression || 'e.g., 0 0 * * * (daily at midnight)'}
+            value={formData.cronExpression}
+            onChange={(e) => setFormData({ ...formData, cronExpression: e.target.value })}
+            error={!!errors.cronExpression}
+            helperText={errors.cronExpression || 'e.g., 0 0 * * * (daily at midnight)'}
             required
             fullWidth
           />
@@ -142,7 +142,7 @@ const JobFormDialog = ({ open, onClose, onSubmit, job, isLoading }: JobFormDialo
           <FormControlLabel
             control={
               <Switch
-                checked={formData.active}
+                checked={!!formData.active}
                 onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
               />
             }

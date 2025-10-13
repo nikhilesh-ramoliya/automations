@@ -1,55 +1,53 @@
 import { Request, Response } from 'express';
-import pool from '../config/database.js';
+import prisma from '../config/prisma.js';
 import { ApiResponse } from '../types/index.js';
 
-export interface JobLog {
-    log_id: number;
-    job_id: number;
-    reference_id: string;
-    execution_time: Date;
-    status: string;
-    request_payload: any;
-    response_data: any;
-    response_status_code: number;
-    error_message: string;
-    execution_duration_ms: number;
-    triggered_by: string;
-    job_name?: string;
-}
-
-export const getAllLogs = async (req: Request, res: Response<ApiResponse<JobLog[]>>): Promise<void> => {
+export const getAllLogs = async (req: Request, res: Response<ApiResponse<any[]>>): Promise<void> => {
     try {
-        const { job_id, status, limit = 100, offset = 0 } = req.query;
+        const { job_id, status, limit = '100', offset = '0' } = req.query;
 
-        let query = `
-            SELECT l.*, j.job_name 
-            FROM job_execution_logs l
-            LEFT JOIN scheduled_jobs j ON l.job_id = j.job_id
-            WHERE 1=1
-        `;
-        const params: any[] = [];
-        let paramIndex = 1;
-
+        const where: any = {};
+        
         if (job_id) {
-            query += ` AND l.job_id = $${paramIndex}`;
-            params.push(parseInt(job_id as string));
-            paramIndex++;
+            where.jobId = BigInt(job_id as string);
         }
-
+        
         if (status) {
-            query += ` AND l.status = $${paramIndex}`;
-            params.push(status);
-            paramIndex++;
+            where.status = status as string;
         }
 
-        query += ` ORDER BY l.execution_time DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
-        params.push(parseInt(limit as string), parseInt(offset as string));
+        const logs = await prisma.jobExecutionLog.findMany({
+            where,
+            include: {
+                job: {
+                    select: {
+                        jobName: true
+                    }
+                }
+            },
+            orderBy: { executionTime: 'desc' },
+            take: parseInt(limit as string),
+            skip: parseInt(offset as string)
+        });
 
-        const result = await pool.query(query, params);
+        const formattedLogs = logs.map((log: any) => ({
+            log_id: log.logId,
+            job_id: log.jobId,
+            reference_id: log.referenceId,
+            execution_time: log.executionTime,
+            status: log.status,
+            request_payload: log.requestPayload,
+            response_data: log.responseData,
+            response_status_code: log.responseStatusCode,
+            error_message: log.errorMessage,
+            execution_duration_ms: log.executionDurationMs,
+            triggered_by: log.triggeredBy,
+            job_name: log.job.jobName
+        }));
 
         res.json({
             success: true,
-            data: result.rows,
+            data: formattedLogs,
             message: 'Logs fetched successfully'
         });
     } catch (error) {
@@ -61,19 +59,22 @@ export const getAllLogs = async (req: Request, res: Response<ApiResponse<JobLog[
     }
 };
 
-export const getLogById = async (req: Request<{ id: string }>, res: Response<ApiResponse<JobLog>>): Promise<void> => {
+export const getLogById = async (req: Request<{ id: string }>, res: Response<ApiResponse<any>>): Promise<void> => {
     try {
-        const logId = parseInt(req.params.id);
+        const logId = BigInt(req.params.id);
         
-        const result = await pool.query(
-            `SELECT l.*, j.job_name 
-             FROM job_execution_logs l
-             LEFT JOIN scheduled_jobs j ON l.job_id = j.job_id
-             WHERE l.log_id = $1`,
-            [logId]
-        );
+        const log = await prisma.jobExecutionLog.findUnique({
+            where: { logId },
+            include: {
+                job: {
+                    select: {
+                        jobName: true
+                    }
+                }
+            }
+        });
 
-        if (result.rows.length === 0) {
+        if (!log) {
             res.status(404).json({
                 success: false,
                 message: 'Log not found'
@@ -81,9 +82,24 @@ export const getLogById = async (req: Request<{ id: string }>, res: Response<Api
             return;
         }
 
+        const formattedLog = {
+            log_id: log.logId,
+            job_id: log.jobId,
+            reference_id: log.referenceId,
+            execution_time: log.executionTime,
+            status: log.status,
+            request_payload: log.requestPayload,
+            response_data: log.responseData,
+            response_status_code: log.responseStatusCode,
+            error_message: log.errorMessage,
+            execution_duration_ms: log.executionDurationMs,
+            triggered_by: log.triggeredBy,
+            job_name: log.job.jobName
+        };
+
         res.json({
             success: true,
-            data: result.rows[0]
+            data: formattedLog
         });
     } catch (error) {
         console.error('Error fetching log:', error);
@@ -94,23 +110,41 @@ export const getLogById = async (req: Request<{ id: string }>, res: Response<Api
     }
 };
 
-export const getLogsByJobId = async (req: Request<{ jobId: string }>, res: Response<ApiResponse<JobLog[]>>): Promise<void> => {
+export const getLogsByJobId = async (req: Request<{ jobId: string }>, res: Response<ApiResponse<any[]>>): Promise<void> => {
     try {
-        const jobId = parseInt(req.params.jobId);
+        const jobId = BigInt(req.params.jobId);
         
-        const result = await pool.query(
-            `SELECT l.*, j.job_name 
-             FROM job_execution_logs l
-             LEFT JOIN scheduled_jobs j ON l.job_id = j.job_id
-             WHERE l.job_id = $1
-             ORDER BY l.execution_time DESC
-             LIMIT 100`,
-            [jobId]
-        );
+        const logs = await prisma.jobExecutionLog.findMany({
+            where: { jobId },
+            include: {
+                job: {
+                    select: {
+                        jobName: true
+                    }
+                }
+            },
+            orderBy: { executionTime: 'desc' },
+            take: 100
+        });
+
+        const formattedLogs = logs.map((log: any) => ({
+            log_id: log.logId,
+            job_id: log.jobId,
+            reference_id: log.referenceId,
+            execution_time: log.executionTime,
+            status: log.status,
+            request_payload: log.requestPayload,
+            response_data: log.responseData,
+            response_status_code: log.responseStatusCode,
+            error_message: log.errorMessage,
+            execution_duration_ms: log.executionDurationMs,
+            triggered_by: log.triggeredBy,
+            job_name: log.job.jobName
+        }));
 
         res.json({
             success: true,
-            data: result.rows
+            data: formattedLogs
         });
     } catch (error) {
         console.error('Error fetching logs by job:', error);

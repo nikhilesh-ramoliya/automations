@@ -1,20 +1,20 @@
 export interface ScheduledJob {
-  job_id: number;
-  job_name: string;
-  description: string;
-  api_url: string;
-  api_method: string;
-  api_headers: any;
-  api_body: any;
-  cron_expression: string;
+  jobId: number | string;
+  jobName: string;
+  description: string | null;
+  apiUrl: string | null;
+  apiMethod: string;
+  apiHeaders: any;
+  apiBody: any;
+  cronExpression: string;
   active: boolean;
-  next_job_id: number | null;
-  retry_count: number;
-  timeout_seconds: number;
-  created_at: string;
-  updated_at: string;
-  last_run_at: string | null;
-  last_run_status: string | null;
+  nextJobId: number | string | null;
+  retryCount: number;
+  timeoutSeconds: number;
+  createdAt: string;
+  updatedAt: string;
+  lastRunAt: string | null;
+  lastRunStatus: string | null;
 }
 
 export interface JobLog {

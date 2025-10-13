@@ -139,7 +139,7 @@ const ScheduledJobsTable = () => {
 
   const handleFormSubmit = (job: Partial<ScheduledJob>) => {
     if (selectedJob) {
-      updateMutation.mutate({ id: selectedJob.job_id, job });
+      updateMutation.mutate({ id: selectedJob.jobId, job });
     } else {
       createMutation.mutate(job);
     }
@@ -195,11 +195,11 @@ const ScheduledJobsTable = () => {
           </TableHead>
           <TableBody>
             {data?.map((job: ScheduledJob) => (
-              <TableRow key={job.job_id} hover>
-                <TableCell>{job.job_id}</TableCell>
+              <TableRow key={job.jobId} hover>
+                <TableCell>{job.jobId}</TableCell>
                 <TableCell>
                   <Typography variant="body2" fontWeight="medium">
-                    {job.job_name}
+                    {job.jobName}
                   </Typography>
                 </TableCell>
                 <TableCell>
@@ -209,12 +209,12 @@ const ScheduledJobsTable = () => {
                 </TableCell>
                 <TableCell>
                   <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.85rem' }} noWrap>
-                    {job.api_url}
+                    {job.apiUrl}
                   </Typography>
                 </TableCell>
                 <TableCell>
                   <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-                    {job.cron_expression}
+                    {job.cronExpression}
                   </Typography>
                 </TableCell>
                 <TableCell>
@@ -222,19 +222,19 @@ const ScheduledJobsTable = () => {
                     label={job.active ? 'Active' : 'Inactive'}
                     color={job.active ? 'success' : 'default'}
                     size="small"
-                    onClick={() => handleToggle(job.job_id)}
+                    onClick={() => handleToggle(Number(job.jobId))}
                     sx={{ cursor: 'pointer' }}
                   />
                 </TableCell>
                 <TableCell>
-                  {job.last_run_at ? (
+                  {job.lastRunAt ? (
                     <Box>
                       <Typography variant="body2">
-                        {new Date(job.last_run_at).toLocaleString()}
+                        {new Date(job.lastRunAt).toLocaleString()}
                       </Typography>
                       <Chip
-                        label={job.last_run_status || 'N/A'}
-                        color={job.last_run_status === 'success' ? 'success' : 'error'}
+                        label={job.lastRunStatus || 'N/A'}
+                        color={job.lastRunStatus === 'success' ? 'success' : 'error'}
                         size="small"
                         sx={{ mt: 0.5 }}
                       />
@@ -251,7 +251,7 @@ const ScheduledJobsTable = () => {
                       <IconButton
                         size="small"
                         color="primary"
-                        onClick={() => handleExecute(job.job_id)}
+                        onClick={() => handleExecute(Number(job.jobId))}
                         disabled={executeMutation.isPending}
                       >
                         <PlayIcon />
@@ -261,7 +261,7 @@ const ScheduledJobsTable = () => {
                       <IconButton
                         size="small"
                         color="info"
-                        onClick={() => handleViewLogs(job.job_id)}
+                        onClick={() => handleViewLogs(Number(job.jobId))}
                       >
                         <HistoryIcon />
                       </IconButton>
@@ -279,7 +279,7 @@ const ScheduledJobsTable = () => {
                       <IconButton
                         size="small"
                         color="error"
-                        onClick={() => handleDelete(job.job_id)}
+                        onClick={() => handleDelete(Number(job.jobId))}
                       >
                         <DeleteIcon />
                       </IconButton>

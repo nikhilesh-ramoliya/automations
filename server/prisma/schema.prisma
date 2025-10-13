@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ScheduledJob {
+  jobId           BigInt             @id @default(autoincrement()) @map("job_id")
+  jobName         String             @map("job_name") @db.VarChar(255)
+  description     String?            @db.Text
+  apiUrl          String?            @map("api_url") @db.Text
+  apiMethod       String?            @default("GET") @map("api_method") @db.VarChar(10)
+  apiHeaders      Json?              @map("api_headers")
+  apiBody         Json?              @map("api_body")
+  cronExpression  String             @map("cron_expression") @db.VarChar(100)
+  active          Boolean?           @default(true)
+  nextJobId       BigInt?            @map("next_job_id")
+  retryCount      Int?               @default(0) @map("retry_count")
+  timeoutSeconds  Int?               @default(30) @map("timeout_seconds")
+  createdAt       DateTime?          @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt       DateTime?          @default(now()) @map("updated_at") @db.Timestamp(6)
+  lastRunAt       DateTime?          @map("last_run_at") @db.Timestamp(6)
+  lastRunStatus   String?            @map("last_run_status") @db.VarChar(50)
+
+  // Self-relation for job chaining
+  nextJob         ScheduledJob?      @relation("JobChain", fields: [nextJobId], references: [jobId], onDelete: NoAction, onUpdate: NoAction)
+  previousJobs    ScheduledJob[]     @relation("JobChain")
+  
+  // Logs relation
+  logs            JobExecutionLog[]
+
+  @@index([active], map: "idx_active_jobs")
+  @@index([nextJobId], map: "idx_next_job")
+  @@map("scheduled_jobs")
+}
+
+model JobExecutionLog {
+  logId                BigInt         @id @default(autoincrement()) @map("log_id")
+  jobId                BigInt         @map("job_id")
+  referenceId          String?        @default(dbgenerated("gen_random_uuid()")) @map("reference_id") @db.Uuid
+  executionTime        DateTime?      @default(now()) @map("execution_time") @db.Timestamp(6)
+  status               String         @db.VarChar(50)
+  requestPayload       Json?          @map("request_payload")
+  responseData         Json?          @map("response_data")
+  responseStatusCode   Int?           @map("response_status_code")
+  errorMessage         String?        @map("error_message") @db.Text
+  executionDurationMs  Int?           @map("execution_duration_ms")
+  triggeredBy          String?        @default("cron") @map("triggered_by") @db.VarChar(100)
+
+  // Job relation
+  job                  ScheduledJob   @relation(fields: [jobId], references: [jobId], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([jobId, executionTime(sort: Desc)], map: "idx_job_logs")
+  @@index([status], map: "idx_log_status")
+  @@index([referenceId], map: "idx_reference_id")
+  @@map("job_execution_logs")
+}

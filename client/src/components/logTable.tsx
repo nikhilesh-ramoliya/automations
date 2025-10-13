@@ -94,8 +94,8 @@ const LogsTable = () => {
           >
             <MenuItem value="">All Jobs</MenuItem>
             {jobs?.map((job) => (
-              <MenuItem key={job.job_id} value={job.job_id}>
-                {job.job_name}
+              <MenuItem key={Number(job.jobId)} value={Number(job.jobId)}>
+                {job.jobName}
               </MenuItem>
             ))}
           </Select>
