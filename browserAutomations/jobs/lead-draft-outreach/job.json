@@ -1,0 +1,38 @@
+{
+  "id": "lead-draft-outreach",
+  "name": "Draft outreach messages",
+  "description": "Template-based personalized LinkedIn/email outreach for qualified leads.",
+  "entry": "run.ts",
+  "tags": ["leads", "outreach"],
+  "requiresAuth": false,
+  "env": [
+    {
+      "name": "LEAD_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Drafts only; never sends messages"
+    },
+    {
+      "name": "LEAD_RUN_ID",
+      "required": false,
+      "description": "Run folder under data/leads/"
+    },
+    {
+      "name": "LEAD_MIN_SCORE",
+      "required": false,
+      "default": 60,
+      "description": "Only draft for leads at/above this score"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "LEAD_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": false,
+    "retryOnProfileLock": false,
+    "retryOnSelectorMiss": false,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0
+  }
+}

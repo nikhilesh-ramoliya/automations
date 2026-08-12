@@ -1,0 +1,45 @@
+{
+  "id": "lead-send-outreach",
+  "name": "Send LinkedIn connect outreach",
+  "description": "Connect-only by default: send LinkedIn connection requests (optional note) for drafted leads. Email only if LEAD_SEND_EMAIL=true. Default dry-run — not in pipeline.",
+  "entry": "run.ts",
+  "tags": ["leads", "outreach", "linkedin", "connect"],
+  "requiresAuth": true,
+  "env": [
+    {
+      "name": "LEAD_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "When true, open connect UI but do not send"
+    },
+    {
+      "name": "LEAD_SEND_ADD_NOTE",
+      "required": false,
+      "default": true,
+      "description": "Add LinkedIn connection note from drafted message"
+    },
+    {
+      "name": "LEAD_SEND_EMAIL",
+      "required": false,
+      "default": false,
+      "description": "Opt-in Gmail send when person.email exists (default off)"
+    },
+    {
+      "name": "LEAD_SEND_MAX",
+      "required": false,
+      "default": "10",
+      "description": "Max leads to process this run"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "LEAD_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": true,
+    "retryOnProfileLock": true,
+    "retryOnSelectorMiss": false,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0
+  }
+}

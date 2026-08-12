@@ -1,0 +1,44 @@
+{
+  "id": "visibility-draft-posts",
+  "name": "Draft visibility posts",
+  "description": "Draft LinkedIn posts for personal brand visibility (AI, automation, IT consulting, custom software). Never auto-publishes.",
+  "entry": "run.ts",
+  "tags": ["visibility", "content", "drafts"],
+  "requiresAuth": false,
+  "env": [
+    {
+      "name": "VISIBILITY_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Still writes drafts.json (never publishes)"
+    },
+    {
+      "name": "VISIBILITY_RUN_ID",
+      "required": false,
+      "description": "Run folder under data/visibility/"
+    },
+    {
+      "name": "VISIBILITY_KEYWORDS",
+      "required": false,
+      "default": "AI,automation,IT consulting,custom software",
+      "description": "Topics for draft posts"
+    },
+    {
+      "name": "VISIBILITY_MAX_DRAFTS",
+      "required": false,
+      "default": 5,
+      "description": "Max draft posts to generate"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "VISIBILITY_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": false,
+    "retryOnProfileLock": false,
+    "retryOnSelectorMiss": false,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0
+  }
+}

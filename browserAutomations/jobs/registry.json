@@ -1,0 +1,298 @@
+{
+  "generatedAt": "2026-08-05T08:19:29.206Z",
+  "jobs": [
+    {
+      "id": "content-compose-draft",
+      "name": "Compose LinkedIn draft (no auto-post)",
+      "description": "Open LinkedIn share box and type the top scored draft. Dry-run types text and does NOT click Post. Publish only with CONTENT_DO_PUBLISH=true and --no-dry-run.",
+      "tags": [
+        "content",
+        "linkedin",
+        "compose",
+        "drafts"
+      ],
+      "requiresAuth": true,
+      "entry": "content-compose-draft/run.ts"
+    },
+    {
+      "id": "content-generate-posts",
+      "name": "Generate scored LinkedIn post drafts",
+      "description": "For each researched topic, generate 3–5 angled LinkedIn posts, score them, and persist drafts (never publishes).",
+      "tags": [
+        "content",
+        "linkedin",
+        "drafts",
+        "scoring"
+      ],
+      "requiresAuth": false,
+      "entry": "content-generate-posts/run.ts"
+    },
+    {
+      "id": "content-pipeline",
+      "name": "LinkedIn content engine pipeline",
+      "description": "Research topics → generate & score drafts → optional LinkedIn compose (Post not clicked in dry-run). Artifacts under data/content/<runId>/.",
+      "tags": [
+        "content",
+        "pipeline",
+        "orchestrator",
+        "linkedin"
+      ],
+      "requiresAuth": false,
+      "entry": "content-pipeline/run.ts",
+      "npmScript": "content:pipeline"
+    },
+    {
+      "id": "content-research-topics",
+      "name": "Research LinkedIn content topics",
+      "description": "Generate authority-building LinkedIn topic ideas (AI when configured, else curated templates). Persists topics.json under data/content/<runId>/.",
+      "tags": [
+        "content",
+        "linkedin",
+        "research",
+        "drafts"
+      ],
+      "requiresAuth": false,
+      "entry": "content-research-topics/run.ts"
+    },
+    {
+      "id": "lead-dedupe",
+      "name": "Dedupe lead companies and people",
+      "description": "Dedupe companies/people by normalized name + LinkedIn URL within the run (and optional prior outputs).",
+      "tags": [
+        "leads",
+        "dedupe"
+      ],
+      "requiresAuth": false,
+      "entry": "lead-dedupe/run.ts"
+    },
+    {
+      "id": "lead-discover-companies",
+      "name": "Discover lead companies",
+      "description": "Find companies that may need software/IT consulting via LinkedIn search (web fallback/seed in dry-run).",
+      "tags": [
+        "leads",
+        "linkedin",
+        "discover",
+        "companies"
+      ],
+      "requiresAuth": true,
+      "entry": "lead-discover-companies/run.ts"
+    },
+    {
+      "id": "lead-draft-outreach",
+      "name": "Draft outreach messages",
+      "description": "Template-based personalized LinkedIn/email outreach for qualified leads.",
+      "tags": [
+        "leads",
+        "outreach"
+      ],
+      "requiresAuth": false,
+      "entry": "lead-draft-outreach/run.ts"
+    },
+    {
+      "id": "lead-enrich-company",
+      "name": "Enrich lead companies",
+      "description": "Enrich companies from LinkedIn company pages and public websites.",
+      "tags": [
+        "leads",
+        "linkedin",
+        "web",
+        "enrich"
+      ],
+      "requiresAuth": true,
+      "entry": "lead-enrich-company/run.ts"
+    },
+    {
+      "id": "lead-export",
+      "name": "Export leads",
+      "description": "Export qualified leads + outreach to CSV and JSON under output/leads/<runId>/.",
+      "tags": [
+        "leads",
+        "export",
+        "csv"
+      ],
+      "requiresAuth": false,
+      "entry": "lead-export/run.ts"
+    },
+    {
+      "id": "lead-find-decision-makers",
+      "name": "Find decision makers",
+      "description": "Find decision makers: website leadership crawl, sequential web SERP→LinkedIn /in/, filtered LI company employees, optional global LI search. Site visits low-concurrency; search engines sequential; LinkedIn sequential.",
+      "tags": [
+        "leads",
+        "linkedin",
+        "people",
+        "web"
+      ],
+      "requiresAuth": false,
+      "entry": "lead-find-decision-makers/run.ts"
+    },
+    {
+      "id": "lead-followup-accepted",
+      "name": "Follow up accepted LinkedIn connects",
+      "description": "After lead-send-outreach connects: check pending vs accepted profiles and send a short LinkedIn DM when Message is available. Default dry-run — not in pipeline.",
+      "tags": [
+        "leads",
+        "outreach",
+        "linkedin",
+        "followup",
+        "message"
+      ],
+      "requiresAuth": true,
+      "entry": "lead-followup-accepted/run.ts"
+    },
+    {
+      "id": "lead-pipeline",
+      "name": "Lead gen pipeline",
+      "description": "Runs the full lead chain in one process: discover → dedupe → enrich → tech-signals → find-decision-makers → suppress → verify → qualify → draft → export.",
+      "tags": [
+        "leads",
+        "pipeline",
+        "orchestrator"
+      ],
+      "requiresAuth": true,
+      "entry": "lead-pipeline/run.ts",
+      "npmScript": "leads:pipeline"
+    },
+    {
+      "id": "lead-qualify",
+      "name": "Qualify leads",
+      "description": "Score buying signals, recommend a service, and write qualified leads.json.",
+      "tags": [
+        "leads",
+        "qualify",
+        "scoring"
+      ],
+      "requiresAuth": false,
+      "entry": "lead-qualify/run.ts"
+    },
+    {
+      "id": "lead-send-outreach",
+      "name": "Send LinkedIn connect outreach",
+      "description": "Connect-only by default: send LinkedIn connection requests (optional note) for drafted leads. Email only if LEAD_SEND_EMAIL=true. Default dry-run — not in pipeline.",
+      "tags": [
+        "leads",
+        "outreach",
+        "linkedin",
+        "connect"
+      ],
+      "requiresAuth": true,
+      "entry": "lead-send-outreach/run.ts"
+    },
+    {
+      "id": "lead-suppress",
+      "name": "Apply suppress lists",
+      "description": "Skip companies/people in suppress lists (customers / already contacted).",
+      "tags": [
+        "leads",
+        "suppress"
+      ],
+      "requiresAuth": false,
+      "entry": "lead-suppress/run.ts"
+    },
+    {
+      "id": "lead-tech-signals",
+      "name": "Collect tech / buying signals",
+      "description": "Scan careers/stack/vendor pages for stronger buying signals.",
+      "tags": [
+        "leads",
+        "web",
+        "tech-signals"
+      ],
+      "requiresAuth": false,
+      "entry": "lead-tech-signals/run.ts"
+    },
+    {
+      "id": "lead-verify-contact",
+      "name": "Verify contacts lightly",
+      "description": "Lightweight verify: website responds, LinkedIn URL shape; optional DNS MX for emails.",
+      "tags": [
+        "leads",
+        "verify",
+        "web"
+      ],
+      "requiresAuth": false,
+      "entry": "lead-verify-contact/run.ts"
+    },
+    {
+      "id": "linkedin-invite-follow-lanatus",
+      "name": "Invite connections to follow Lanatus",
+      "description": "Monthly-paced LinkedIn Page invites to follow Lanatus Systems (admin Invite to follow).",
+      "tags": [
+        "linkedin",
+        "invite",
+        "lanatus",
+        "page-admin"
+      ],
+      "requiresAuth": true,
+      "entry": "linkedin-invite-follow-lanatus/run.ts",
+      "npmScript": "invite:lanatus"
+    },
+    {
+      "id": "visibility-draft-posts",
+      "name": "Draft visibility posts",
+      "description": "Draft LinkedIn posts for personal brand visibility (AI, automation, IT consulting, custom software). Never auto-publishes.",
+      "tags": [
+        "visibility",
+        "content",
+        "drafts"
+      ],
+      "requiresAuth": false,
+      "entry": "visibility-draft-posts/run.ts"
+    },
+    {
+      "id": "visibility-engage",
+      "name": "Engage on posts",
+      "description": "Scroll content human-like; like when relevance is solid; comment only when score is high. Dry-run: react yes, type comment without sending.",
+      "tags": [
+        "visibility",
+        "linkedin",
+        "engage",
+        "react",
+        "comment"
+      ],
+      "requiresAuth": true,
+      "entry": "visibility-engage/run.ts"
+    },
+    {
+      "id": "visibility-find-posts",
+      "name": "Find posts for visibility",
+      "description": "Search LinkedIn content for AI/automation/IT consulting/custom software posts to engage with (personal brand visibility).",
+      "tags": [
+        "visibility",
+        "linkedin",
+        "content",
+        "search"
+      ],
+      "requiresAuth": true,
+      "entry": "visibility-find-posts/run.ts"
+    },
+    {
+      "id": "visibility-pipeline",
+      "name": "Visibility pipeline",
+      "description": "Content-first LinkedIn visibility: search posts → like/comment; connect only on strong software-dev lead fit. Set VISIBILITY_TARGETED=true for optional ICP people mode.",
+      "tags": [
+        "visibility",
+        "pipeline",
+        "orchestrator"
+      ],
+      "requiresAuth": true,
+      "entry": "visibility-pipeline/run.ts"
+    },
+    {
+      "id": "visibility-targeted-engage",
+      "name": "Visibility — targeted people engage",
+      "description": "ICP people search → view profiles → meaningful comments + reacts on their posts → optional personalized connects. Preferred over keyword content scrolling.",
+      "tags": [
+        "visibility",
+        "linkedin",
+        "engage",
+        "people",
+        "icp",
+        "network"
+      ],
+      "requiresAuth": true,
+      "entry": "visibility-targeted-engage/run.ts"
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "id": "visibility-targeted-engage",
+  "name": "Visibility — targeted people engage",
+  "description": "ICP people search → view profiles → meaningful comments + reacts on their posts → optional personalized connects. Preferred over keyword content scrolling.",
+  "entry": "run.ts",
+  "tags": ["visibility", "linkedin", "engage", "people", "icp", "network"],
+  "requiresAuth": true,
+  "env": [
+    {
+      "name": "VISIBILITY_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "React allowed; comments typed not sent; connects dry-run"
+    },
+    {
+      "name": "VISIBILITY_ICP_QUERIES",
+      "required": false,
+      "default": "CTO software,Founder SaaS,VP Engineering,Head of Engineering,Engineering Manager",
+      "description": "Comma-separated people search queries (ICP titles)"
+    },
+    {
+      "name": "VISIBILITY_MAX_PROFILES",
+      "required": false,
+      "default": "12",
+      "description": "Max profiles to view this run"
+    },
+    {
+      "name": "VISIBILITY_MAX_REACTIONS",
+      "required": false,
+      "default": "12"
+    },
+    {
+      "name": "VISIBILITY_MAX_COMMENTS",
+      "required": false,
+      "default": "6"
+    },
+    {
+      "name": "VISIBILITY_MAX_CONNECTS",
+      "required": false,
+      "default": "5"
+    },
+    {
+      "name": "VISIBILITY_DO_CONNECT",
+      "required": false,
+      "default": true,
+      "description": "Send personalized connection requests after engage"
+    },
+    {
+      "name": "HEADLESS",
+      "required": false,
+      "default": false
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "VISIBILITY_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": true,
+    "retryOnProfileLock": true,
+    "retryOnSelectorMiss": false,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0,
+    "authCommand": "auth:linkedin",
+    "profilePath": ".pw-user-data/linkedin"
+  }
+}

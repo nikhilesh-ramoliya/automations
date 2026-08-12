@@ -1,0 +1,82 @@
+{
+  "id": "visibility-engage",
+  "name": "Engage on posts",
+  "description": "Scroll content human-like; like when relevance is solid; comment only when score is high. Dry-run: react yes, type comment without sending.",
+  "entry": "run.ts",
+  "tags": ["visibility", "linkedin", "engage", "react", "comment"],
+  "requiresAuth": true,
+  "env": [
+    {
+      "name": "VISIBILITY_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "React yes; type comment but do not click Post/Send"
+    },
+    {
+      "name": "VISIBILITY_RUN_ID",
+      "required": false,
+      "description": "Run folder under data/visibility/"
+    },
+    {
+      "name": "VISIBILITY_KEYWORDS",
+      "required": false,
+      "default": "AI,automation,IT consulting,custom software",
+      "description": "Topics used for content search + relevance scoring"
+    },
+    {
+      "name": "VISIBILITY_LIKE_MIN_SCORE",
+      "required": false,
+      "default": 55,
+      "description": "Minimum relevance (0-100) to like a post"
+    },
+    {
+      "name": "VISIBILITY_COMMENT_MIN_SCORE",
+      "required": false,
+      "default": 75,
+      "description": "Minimum relevance (0-100) to type/send a comment"
+    },
+    {
+      "name": "VISIBILITY_MAX_REACTIONS",
+      "required": false,
+      "default": 10,
+      "description": "Max reactions this run"
+    },
+    {
+      "name": "VISIBILITY_MAX_COMMENTS",
+      "required": false,
+      "default": 5,
+      "description": "Max comments typed (sent only when not dry-run)"
+    },
+    {
+      "name": "VISIBILITY_MAX_SCAN",
+      "required": false,
+      "default": 25,
+      "description": "Max post cards to evaluate while scrolling"
+    },
+    {
+      "name": "VISIBILITY_DELAY_MS",
+      "required": false,
+      "default": 2000,
+      "description": "Delay floor for human-like pauses (ms)"
+    },
+    {
+      "name": "HEADLESS",
+      "required": false,
+      "default": false,
+      "description": "Run Chromium headless"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "VISIBILITY_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": true,
+    "retryOnProfileLock": true,
+    "retryOnSelectorMiss": true,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 1,
+    "authCommand": "auth:linkedin",
+    "profilePath": ".pw-user-data/linkedin"
+  }
+}

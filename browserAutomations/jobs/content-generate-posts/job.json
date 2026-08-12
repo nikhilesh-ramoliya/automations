@@ -1,0 +1,67 @@
+{
+  "id": "content-generate-posts",
+  "name": "Generate scored LinkedIn post drafts",
+  "description": "For each researched topic, generate 3–5 angled LinkedIn posts, score them, and persist drafts (never publishes).",
+  "entry": "run.ts",
+  "tags": ["content", "linkedin", "drafts", "scoring"],
+  "requiresAuth": false,
+  "linkedinLock": false,
+  "env": [
+    {
+      "name": "CONTENT_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Still writes drafts.json (never publishes)"
+    },
+    {
+      "name": "CONTENT_RUN_ID",
+      "required": false,
+      "description": "Run folder; defaults to latest with topics.json"
+    },
+    {
+      "name": "CONTENT_MAX_VARIATIONS",
+      "required": false,
+      "default": 4,
+      "description": "Post variations per topic (3–5)"
+    },
+    {
+      "name": "CONTENT_MAX_TOPICS",
+      "required": false,
+      "default": 8,
+      "description": "Max topics to expand into posts"
+    },
+    {
+      "name": "CONTENT_MIN_SCORE",
+      "required": false,
+      "default": 55,
+      "description": "Log/filter hint; all drafts still persisted"
+    },
+    {
+      "name": "CONTENT_USE_AI",
+      "required": false,
+      "default": true,
+      "description": "Use Cursor (CURSOR_API_KEY) or OpenAI-compatible API to generate posts"
+    },
+    {
+      "name": "CURSOR_API_KEY",
+      "required": false,
+      "description": "Preferred: Cursor Agent SDK key for unique post generation"
+    },
+    {
+      "name": "OPENAI_API_KEY",
+      "required": false,
+      "description": "Optional fallback if CURSOR_API_KEY is unset"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "CONTENT_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": false,
+    "retryOnProfileLock": false,
+    "retryOnSelectorMiss": false,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0
+  }
+}

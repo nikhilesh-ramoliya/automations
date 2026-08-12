@@ -1,0 +1,32 @@
+{
+  "id": "lead-dedupe",
+  "name": "Dedupe lead companies and people",
+  "description": "Dedupe companies/people by normalized name + LinkedIn URL within the run (and optional prior outputs).",
+  "entry": "run.ts",
+  "tags": ["leads", "dedupe"],
+  "requiresAuth": false,
+  "env": [
+    {
+      "name": "LEAD_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Still writes deduped artifacts; logs what would merge"
+    },
+    {
+      "name": "LEAD_RUN_ID",
+      "required": false,
+      "description": "Run folder under data/leads/"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "LEAD_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": false,
+    "retryOnProfileLock": false,
+    "retryOnSelectorMiss": false,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0
+  }
+}

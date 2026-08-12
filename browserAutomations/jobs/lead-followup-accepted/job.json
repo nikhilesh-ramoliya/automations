@@ -1,0 +1,44 @@
+{
+  "id": "lead-followup-accepted",
+  "name": "Follow up accepted LinkedIn connects",
+  "description": "After lead-send-outreach connects: check pending vs accepted profiles and send a short LinkedIn DM when Message is available. Default dry-run — not in pipeline.",
+  "entry": "run.ts",
+  "tags": ["leads", "outreach", "linkedin", "followup", "message"],
+  "requiresAuth": true,
+  "env": [
+    {
+      "name": "LEAD_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "When true, type the DM but do not click Send"
+    },
+    {
+      "name": "LEAD_FOLLOWUP_MAX",
+      "required": false,
+      "default": "10",
+      "description": "Max pending connects to process this run"
+    },
+    {
+      "name": "LEAD_FOLLOWUP_ONLY_ACCEPTED",
+      "required": false,
+      "default": false,
+      "description": "When true, pending profiles are skipped (not_accepted) instead of recorded as pending"
+    },
+    {
+      "name": "LEAD_RUN_ID",
+      "required": false,
+      "description": "Lead run folder under data/leads/ (latest if unset)"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "LEAD_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": true,
+    "retryOnProfileLock": true,
+    "retryOnSelectorMiss": false,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0
+  }
+}

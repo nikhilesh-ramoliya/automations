@@ -1,0 +1,38 @@
+{
+  "id": "lead-export",
+  "name": "Export leads",
+  "description": "Export qualified leads + outreach to CSV and JSON under output/leads/<runId>/.",
+  "entry": "run.ts",
+  "tags": ["leads", "export", "csv"],
+  "requiresAuth": false,
+  "env": [
+    {
+      "name": "LEAD_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Still writes export files"
+    },
+    {
+      "name": "LEAD_RUN_ID",
+      "required": false,
+      "description": "Run folder under data/leads/"
+    },
+    {
+      "name": "LEAD_MIN_SCORE",
+      "required": false,
+      "default": 60,
+      "description": "Filter export by minimum score"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "LEAD_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": false,
+    "retryOnProfileLock": false,
+    "retryOnSelectorMiss": false,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "id": "lead-verify-contact",
+  "name": "Verify contacts lightly",
+  "description": "Lightweight verify: website responds, LinkedIn URL shape; optional DNS MX for emails.",
+  "entry": "run.ts",
+  "tags": ["leads", "verify", "web"],
+  "requiresAuth": false,
+  "env": [
+    {
+      "name": "LEAD_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Still performs lightweight HTTP/DNS checks"
+    },
+    {
+      "name": "LEAD_RUN_ID",
+      "required": false,
+      "description": "Run folder under data/leads/"
+    },
+    {
+      "name": "LEAD_MAX_COMPANIES",
+      "required": false,
+      "default": 10,
+      "description": "Cap companies to verify"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "LEAD_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": false,
+    "retryOnProfileLock": false,
+    "retryOnSelectorMiss": false,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0
+  }
+}

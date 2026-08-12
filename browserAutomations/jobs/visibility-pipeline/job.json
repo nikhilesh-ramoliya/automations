@@ -1,0 +1,56 @@
+{
+  "id": "visibility-pipeline",
+  "name": "Visibility pipeline",
+  "description": "Content-first LinkedIn visibility: search posts → like/comment; connect only on strong software-dev lead fit. Set VISIBILITY_TARGETED=true for optional ICP people mode.",
+  "entry": "run.ts",
+  "tags": ["visibility", "pipeline", "orchestrator"],
+  "requiresAuth": true,
+  "env": [
+    {
+      "name": "VISIBILITY_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Propagated to steps. React allowed; comments typed but not sent."
+    },
+    {
+      "name": "VISIBILITY_RUN_ID",
+      "required": false,
+      "description": "Shared run id across steps"
+    },
+    {
+      "name": "VISIBILITY_PIPELINE_FROM",
+      "required": false,
+      "description": "Start at this step id (inclusive)"
+    },
+    {
+      "name": "VISIBILITY_PIPELINE_TO",
+      "required": false,
+      "description": "Stop at this step id (inclusive)"
+    },
+    {
+      "name": "VISIBILITY_KEYWORDS",
+      "required": false,
+      "default": "AI,automation,IT consulting,custom software",
+      "description": "Content topics"
+    },
+    {
+      "name": "HEADLESS",
+      "required": false,
+      "default": false,
+      "description": "Run Chromium headless"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "VISIBILITY_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": true,
+    "retryOnProfileLock": true,
+    "retryOnSelectorMiss": false,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0,
+    "authCommand": "auth:linkedin",
+    "profilePath": ".pw-user-data/linkedin"
+  }
+}

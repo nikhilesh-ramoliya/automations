@@ -1,0 +1,52 @@
+{
+  "id": "lead-enrich-company",
+  "name": "Enrich lead companies",
+  "description": "Enrich companies from LinkedIn company pages and public websites.",
+  "entry": "run.ts",
+  "tags": ["leads", "linkedin", "web", "enrich"],
+  "requiresAuth": true,
+  "env": [
+    {
+      "name": "LEAD_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Still enriches via public pages when possible; skips aggressive LinkedIn clicks"
+    },
+    {
+      "name": "LEAD_RUN_ID",
+      "required": false,
+      "description": "Run folder under data/leads/"
+    },
+    {
+      "name": "LEAD_MAX_COMPANIES",
+      "required": false,
+      "default": 10,
+      "description": "Cap companies to enrich"
+    },
+    {
+      "name": "LEAD_DELAY_MS",
+      "required": false,
+      "default": 2000,
+      "description": "Delay between page visits (ms)"
+    },
+    {
+      "name": "HEADLESS",
+      "required": false,
+      "default": false,
+      "description": "Run Chromium headless"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "LEAD_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": true,
+    "retryOnProfileLock": true,
+    "retryOnSelectorMiss": true,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 1,
+    "authCommand": "auth:linkedin",
+    "profilePath": ".pw-user-data/linkedin"
+  }
+}

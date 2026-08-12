@@ -1,0 +1,48 @@
+{
+  "id": "lead-qualify",
+  "name": "Qualify leads",
+  "description": "Score buying signals, recommend a service, and write qualified leads.json.",
+  "entry": "run.ts",
+  "tags": ["leads", "qualify", "scoring"],
+  "requiresAuth": false,
+  "env": [
+    {
+      "name": "LEAD_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Still writes leads.json from rules scoring"
+    },
+    {
+      "name": "LEAD_RUN_ID",
+      "required": false,
+      "description": "Run folder under data/leads/"
+    },
+    {
+      "name": "LEAD_MIN_SCORE",
+      "required": false,
+      "default": 60,
+      "description": "Minimum score to include in leads.json"
+    },
+    {
+      "name": "LEAD_KEYWORDS",
+      "required": false,
+      "description": "Comma-separated keywords for scoring boost"
+    },
+    {
+      "name": "LEAD_INDUSTRIES",
+      "required": false,
+      "description": "Comma-separated industries for scoring boost"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "LEAD_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": false,
+    "retryOnProfileLock": false,
+    "retryOnSelectorMiss": false,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0
+  }
+}

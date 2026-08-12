@@ -1,0 +1,41 @@
+{
+  "name": "browser-automations",
+  "version": "1.0.0",
+  "description": "Playwright browser automations for redundant business tasks (LinkedIn and more)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "jobs:list": "tsx scripts/jobs-cli.ts list",
+    "jobs:run": "tsx scripts/jobs-cli.ts run",
+    "auth:linkedin": "tsx automations/linkedin-login.ts",
+    "auth:google": "tsx automations/google-login.ts",
+    "session:linkedin": "tsx automations/linkedin-session-log.ts",
+    "invite:lanatus": "tsx scripts/jobs-cli.ts run linkedin-invite-follow-lanatus",
+    "leads:pipeline": "tsx scripts/jobs-cli.ts run lead-pipeline",
+    "visibility:pipeline": "tsx scripts/jobs-cli.ts run visibility-pipeline",
+    "content:pipeline": "tsx scripts/jobs-cli.ts run content-pipeline",
+    "safety:status": "tsx scripts/linkedin-safety-status.ts",
+    "record:linkedin": "tsx automations/linkedin-record.ts",
+    "workflow:from-recording": "tsx automations/generate-workflow-from-recording.ts",
+    "typecheck": "tsc --noEmit",
+    "verify:search-api": "tsx scripts/verify-search-api.ts",
+    "playwright:install": "playwright install chromium"
+  },
+  "keywords": [
+    "playwright",
+    "automation",
+    "linkedin"
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "@cursor/sdk": "^1.0.27",
+    "@playwright/test": "^1.62.1",
+    "dotenv": "^17.4.2",
+    "playwright": "^1.62.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.2",
+    "tsx": "^4.23.5",
+    "typescript": "^7.0.2"
+  }
+}

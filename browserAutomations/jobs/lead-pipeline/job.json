@@ -1,0 +1,63 @@
+{
+  "id": "lead-pipeline",
+  "name": "Lead gen pipeline",
+  "description": "Runs the full lead chain in one process: discover → dedupe → enrich → tech-signals → find-decision-makers → suppress → verify → qualify → draft → export.",
+  "entry": "run.ts",
+  "tags": ["leads", "pipeline", "orchestrator"],
+  "requiresAuth": true,
+  "env": [
+    {
+      "name": "LEAD_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Propagates to all steps (browser jobs skip risky actions)"
+    },
+    {
+      "name": "LEAD_RUN_ID",
+      "required": false,
+      "description": "Reuse run; unset creates new id on discover"
+    },
+    {
+      "name": "LEAD_MAX_COMPANIES",
+      "required": false,
+      "default": 10,
+      "description": "Safety cap for companies"
+    },
+    {
+      "name": "LEAD_MAX_PEOPLE_PER_COMPANY",
+      "required": false,
+      "default": 3,
+      "description": "Max people per company"
+    },
+    {
+      "name": "LEAD_MIN_SCORE",
+      "required": false,
+      "default": 60,
+      "description": "Qualify/export threshold"
+    },
+    {
+      "name": "LEAD_PIPELINE_FROM",
+      "required": false,
+      "description": "Optional step id to start from (e.g. lead-enrich-company)"
+    },
+    {
+      "name": "LEAD_PIPELINE_TO",
+      "required": false,
+      "description": "Optional step id to stop after"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "LEAD_DRY_RUN",
+    "npmScript": "leads:pipeline"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": true,
+    "retryOnProfileLock": true,
+    "retryOnSelectorMiss": true,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 1,
+    "authCommand": "auth:linkedin",
+    "profilePath": ".pw-user-data/linkedin"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "id": "content-research-topics",
+  "name": "Research LinkedIn content topics",
+  "description": "Generate authority-building LinkedIn topic ideas (AI when configured, else curated templates). Persists topics.json under data/content/<runId>/.",
+  "entry": "run.ts",
+  "tags": ["content", "linkedin", "research", "drafts"],
+  "requiresAuth": false,
+  "linkedinLock": false,
+  "env": [
+    {
+      "name": "CONTENT_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Still writes topics.json (research is offline)"
+    },
+    {
+      "name": "CONTENT_RUN_ID",
+      "required": false,
+      "description": "Run folder under data/content/"
+    },
+    {
+      "name": "CONTENT_MAX_TOPICS",
+      "required": false,
+      "default": 8,
+      "description": "How many topic ideas to generate"
+    },
+    {
+      "name": "CONTENT_CATEGORIES",
+      "required": false,
+      "description": "Comma-separated focus areas (defaults to AI, SaaS, DevOps, …)"
+    },
+    {
+      "name": "CONTENT_AUDIENCES",
+      "required": false,
+      "description": "Comma-separated ICP audiences"
+    },
+    {
+      "name": "CONTENT_USE_AI",
+      "required": false,
+      "default": true,
+      "description": "Use Cursor (CURSOR_API_KEY) or OpenAI-compatible API; else topic bank"
+    },
+    {
+      "name": "CURSOR_API_KEY",
+      "required": false,
+      "description": "Preferred: Cursor Agent SDK key for topic research"
+    },
+    {
+      "name": "OPENAI_API_KEY",
+      "required": false,
+      "description": "Optional fallback if CURSOR_API_KEY is unset"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "CONTENT_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": false,
+    "retryOnProfileLock": false,
+    "retryOnSelectorMiss": false,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0
+  }
+}

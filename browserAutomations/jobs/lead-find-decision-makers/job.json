@@ -1,0 +1,106 @@
+{
+  "id": "lead-find-decision-makers",
+  "name": "Find decision makers",
+  "description": "Find decision makers: website leadership crawl, sequential web SERP→LinkedIn /in/, filtered LI company employees, optional global LI search. Site visits low-concurrency; search engines sequential; LinkedIn sequential.",
+  "entry": "run.ts",
+  "tags": ["leads", "linkedin", "people", "web"],
+  "requiresAuth": false,
+  "env": [
+    {
+      "name": "LEAD_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Navigate/log; may write seed people if scrape blocked"
+    },
+    {
+      "name": "LEAD_RUN_ID",
+      "required": false,
+      "description": "Run folder under data/leads/"
+    },
+    {
+      "name": "LEAD_MAX_COMPANIES",
+      "required": false,
+      "default": 10,
+      "description": "Cap companies to process"
+    },
+    {
+      "name": "LEAD_MAX_PEOPLE_PER_COMPANY",
+      "required": false,
+      "default": 3,
+      "description": "Max people per company"
+    },
+    {
+      "name": "LEAD_PEOPLE_WEB_FIRST",
+      "required": false,
+      "default": true,
+      "description": "Scored website about/team/leadership crawl first"
+    },
+    {
+      "name": "LEAD_PEOPLE_WEB_SEARCH",
+      "required": false,
+      "default": true,
+      "description": "Bing/DDG search for LinkedIn /in/ profiles before LI session"
+    },
+    {
+      "name": "LEAD_WEB_CONCURRENCY",
+      "required": false,
+      "default": 1,
+      "description": "Parallel company website visits only (max 2). Search engines always sequential."
+    },
+    {
+      "name": "LEAD_SKIP_WEB_SEARCH",
+      "required": false,
+      "default": false,
+      "description": "Skip Bing/DDG SERP (use after CAPTCHA; rely on websites + LinkedIn)"
+    },
+    {
+      "name": "LEAD_WEB_DELAY_MULT",
+      "required": false,
+      "default": 1.5,
+      "description": "Extra SERP delay multiplier (on top of LI_SAFE_DELAY_MULT)"
+    },
+    {
+      "name": "LEAD_WEB_USE_SYSTEM_CHROME",
+      "required": false,
+      "default": true,
+      "description": "Prefer installed Chrome for ephemeral web browsers"
+    },
+    {
+      "name": "LEAD_PEOPLE_LINKEDIN_COMPANY",
+      "required": false,
+      "default": true,
+      "description": "Filtered LinkedIn company employees (keywords + title gate)"
+    },
+    {
+      "name": "LEAD_PEOPLE_LINKEDIN_SEARCH",
+      "required": false,
+      "default": true,
+      "description": "Last resort: global LinkedIn people search"
+    },
+    {
+      "name": "LEAD_DELAY_MS",
+      "required": false,
+      "default": 2000,
+      "description": "Delay between actions (ms)"
+    },
+    {
+      "name": "HEADLESS",
+      "required": false,
+      "default": false,
+      "description": "Run Chromium headless"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "LEAD_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": true,
+    "retryOnProfileLock": true,
+    "retryOnSelectorMiss": true,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 1,
+    "authCommand": "auth:linkedin",
+    "profilePath": ".pw-user-data/linkedin"
+  }
+}

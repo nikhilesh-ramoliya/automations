@@ -1,0 +1,42 @@
+{
+  "id": "lead-suppress",
+  "name": "Apply suppress lists",
+  "description": "Skip companies/people in suppress lists (customers / already contacted).",
+  "entry": "run.ts",
+  "tags": ["leads", "suppress"],
+  "requiresAuth": false,
+  "env": [
+    {
+      "name": "LEAD_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Still marks suppressed records in artifacts"
+    },
+    {
+      "name": "LEAD_RUN_ID",
+      "required": false,
+      "description": "Run folder under data/leads/"
+    },
+    {
+      "name": "LEAD_SUPPRESS_COMPANIES",
+      "required": false,
+      "description": "Path to CSV/JSON company suppress list"
+    },
+    {
+      "name": "LEAD_SUPPRESS_PEOPLE",
+      "required": false,
+      "description": "Path to CSV/JSON people suppress list"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "LEAD_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": false,
+    "retryOnProfileLock": false,
+    "retryOnSelectorMiss": false,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0
+  }
+}

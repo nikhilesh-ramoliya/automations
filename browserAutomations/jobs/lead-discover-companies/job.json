@@ -1,0 +1,67 @@
+{
+  "id": "lead-discover-companies",
+  "name": "Discover lead companies",
+  "description": "Find companies that may need software/IT consulting via LinkedIn search (web fallback/seed in dry-run).",
+  "entry": "run.ts",
+  "tags": ["leads", "linkedin", "discover", "companies"],
+  "requiresAuth": true,
+  "env": [
+    {
+      "name": "LEAD_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Navigate/log; still writes companies.json (sample if scrape blocked)"
+    },
+    {
+      "name": "LEAD_RUN_ID",
+      "required": false,
+      "description": "Reuse existing run folder; unset creates a new timestamp id"
+    },
+    {
+      "name": "LEAD_MAX_COMPANIES",
+      "required": false,
+      "default": 10,
+      "description": "Cap companies discovered (safety default 10)"
+    },
+    {
+      "name": "LEAD_KEYWORDS",
+      "required": false,
+      "description": "Comma-separated search keywords"
+    },
+    {
+      "name": "LEAD_GEOS",
+      "required": false,
+      "description": "Comma-separated geos (logged into search query)"
+    },
+    {
+      "name": "LEAD_INDUSTRIES",
+      "required": false,
+      "description": "Comma-separated industries"
+    },
+    {
+      "name": "LEAD_DELAY_MS",
+      "required": false,
+      "default": 2000,
+      "description": "Delay between LinkedIn actions (ms)"
+    },
+    {
+      "name": "HEADLESS",
+      "required": false,
+      "default": false,
+      "description": "Run Chromium headless"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "LEAD_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": true,
+    "retryOnProfileLock": true,
+    "retryOnSelectorMiss": true,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 1,
+    "authCommand": "auth:linkedin",
+    "profilePath": ".pw-user-data/linkedin"
+  }
+}

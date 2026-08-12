@@ -1,0 +1,58 @@
+{
+  "id": "content-compose-draft",
+  "name": "Compose LinkedIn draft (no auto-post)",
+  "description": "Open LinkedIn share box and type the top scored draft. Dry-run types text and does NOT click Post. Publish only with CONTENT_DO_PUBLISH=true and --no-dry-run.",
+  "entry": "run.ts",
+  "tags": ["content", "linkedin", "compose", "drafts"],
+  "requiresAuth": true,
+  "linkedinLock": true,
+  "env": [
+    {
+      "name": "CONTENT_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Type into composer but never click Post"
+    },
+    {
+      "name": "CONTENT_RUN_ID",
+      "required": false,
+      "description": "Run folder with drafts.json"
+    },
+    {
+      "name": "CONTENT_COMPOSE_DRAFT_ID",
+      "required": false,
+      "description": "Optional specific draft id; else highest score"
+    },
+    {
+      "name": "CONTENT_MIN_SCORE",
+      "required": false,
+      "default": 55,
+      "description": "Min score when auto-picking a draft"
+    },
+    {
+      "name": "CONTENT_COMPOSE_REVIEW_MS",
+      "required": false,
+      "default": 12000,
+      "description": "How long to leave text visible before closing (dry-run)"
+    },
+    {
+      "name": "CONTENT_DO_PUBLISH",
+      "required": false,
+      "default": false,
+      "description": "Only with --no-dry-run: click Post after typing"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "CONTENT_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": true,
+    "retryOnProfileLock": true,
+    "retryOnSelectorMiss": true,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 1,
+    "authCommand": "auth:linkedin",
+    "profilePath": ".pw-user-data/linkedin"
+  }
+}

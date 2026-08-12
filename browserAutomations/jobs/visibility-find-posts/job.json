@@ -1,0 +1,58 @@
+{
+  "id": "visibility-find-posts",
+  "name": "Find posts for visibility",
+  "description": "Search LinkedIn content for AI/automation/IT consulting/custom software posts to engage with (personal brand visibility).",
+  "entry": "run.ts",
+  "tags": ["visibility", "linkedin", "content", "search"],
+  "requiresAuth": true,
+  "env": [
+    {
+      "name": "VISIBILITY_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Still searches and writes posts.json"
+    },
+    {
+      "name": "VISIBILITY_RUN_ID",
+      "required": false,
+      "description": "Reuse run folder; unset creates a new timestamp id"
+    },
+    {
+      "name": "VISIBILITY_KEYWORDS",
+      "required": false,
+      "default": "AI,automation,IT consulting,custom software",
+      "description": "Comma-separated content search keywords"
+    },
+    {
+      "name": "VISIBILITY_MAX_POSTS",
+      "required": false,
+      "default": 15,
+      "description": "Cap posts collected this run"
+    },
+    {
+      "name": "VISIBILITY_DELAY_MS",
+      "required": false,
+      "default": 2000,
+      "description": "Delay floor between LinkedIn actions (ms)"
+    },
+    {
+      "name": "HEADLESS",
+      "required": false,
+      "default": false,
+      "description": "Run Chromium headless"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "VISIBILITY_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": true,
+    "retryOnProfileLock": true,
+    "retryOnSelectorMiss": true,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 1,
+    "authCommand": "auth:linkedin",
+    "profilePath": ".pw-user-data/linkedin"
+  }
+}

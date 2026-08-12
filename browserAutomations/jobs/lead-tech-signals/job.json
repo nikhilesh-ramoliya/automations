@@ -1,0 +1,56 @@
+{
+  "id": "lead-tech-signals",
+  "name": "Collect tech / buying signals",
+  "description": "Scan careers/stack/vendor pages for stronger buying signals.",
+  "entry": "run.ts",
+  "tags": ["leads", "web", "tech-signals"],
+  "requiresAuth": false,
+  "env": [
+    {
+      "name": "LEAD_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Still visits public pages when URLs exist"
+    },
+    {
+      "name": "LEAD_RUN_ID",
+      "required": false,
+      "description": "Run folder under data/leads/"
+    },
+    {
+      "name": "LEAD_MAX_COMPANIES",
+      "required": false,
+      "default": 10,
+      "description": "Cap companies to scan"
+    },
+    {
+      "name": "LEAD_DELAY_MS",
+      "required": false,
+      "default": 2000,
+      "description": "Delay between page visits (ms)"
+    },
+    {
+      "name": "LEAD_WEB_CONCURRENCY",
+      "required": false,
+      "default": 1,
+      "description": "Parallel company site crawls only (max 2; no search engines)"
+    },
+    {
+      "name": "LEAD_TECH_CRAWL_MAX_PAGES",
+      "required": false,
+      "default": 8,
+      "description": "Max same-origin pages per company crawl"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "LEAD_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": false,
+    "retryOnProfileLock": false,
+    "retryOnSelectorMiss": true,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 1
+  }
+}

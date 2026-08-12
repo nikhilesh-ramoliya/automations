@@ -1,0 +1,27 @@
+{
+  "id": "my-new-job",
+  "name": "My new job",
+  "description": "Short one-liner describing what this automation does.",
+  "entry": "run.ts",
+  "tags": ["example"],
+  "requiresAuth": false,
+  "env": [
+    {
+      "name": "DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "When true, skip mutating actions"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": false,
+    "retryOnProfileLock": false,
+    "retryOnSelectorMiss": true,
+    "softExitOnZeroBatch": false,
+    "maxRetries": 1
+  }
+}

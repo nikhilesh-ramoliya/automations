@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+
+# Auth / storage state (never commit)
+auth/
+*.storage.json
+**/storage-state*.json
+
+# Playwright persistent browser profiles
+.pw-user-data/
+
+# Session activity logs
+logs/
+
+# Lead-gen run artifacts (suppress examples committed)
+data/leads/*/
+!data/leads/suppress/
+!data/leads/suppress/**
+# Visibility / personal-brand run artifacts
+data/visibility/*/
+data/visibility/last-search-keyword.json
+output/visibility/*/
+!output/visibility/.gitignore
+
+data/content/*/
+!data/content/instructions.md
+data/content/recent-fingerprints.json
+data/content/interest-usage.json
+output/content/*/
+!output/content/.gitignore
+# LinkedIn daily usage counters + job lock
+data/linkedin-safety/
+output/leads/*/
+!output/leads/.gitignore
+
+# Playwright artifacts
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+traces/
+*.zip
+
+# Build / tooling
+dist/
+*.tsbuildinfo
+.tsx-cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/*
+!.vscode/extensions.json

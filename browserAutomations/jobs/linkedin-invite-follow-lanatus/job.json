@@ -1,0 +1,69 @@
+{
+  "id": "linkedin-invite-follow-lanatus",
+  "name": "Invite connections to follow Lanatus",
+  "description": "Monthly-paced LinkedIn Page invites to follow Lanatus Systems (admin Invite to follow).",
+  "entry": "run.ts",
+  "tags": ["linkedin", "invite", "lanatus", "page-admin"],
+  "requiresAuth": true,
+  "env": [
+    {
+      "name": "LANATUS_COMPANY_URL",
+      "required": false,
+      "default": "https://www.linkedin.com/company/lanatus/",
+      "description": "Company Page URL (LINKEDIN_COMPANY_URL also works)"
+    },
+    {
+      "name": "INVITE_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "true = log candidates only; do not click Invite"
+    },
+    {
+      "name": "INVITE_MAX",
+      "required": false,
+      "description": "Optional cap on paced batch size"
+    },
+    {
+      "name": "INVITE_MAX_MODE",
+      "required": false,
+      "default": "cap",
+      "description": "cap | override"
+    },
+    {
+      "name": "INVITE_DELAY_MS",
+      "required": false,
+      "default": 2000,
+      "description": "Delay between UI actions (ms)"
+    },
+    {
+      "name": "INVITE_QUERY",
+      "required": false,
+      "description": "Optional name search in invite modal"
+    },
+    {
+      "name": "INVITE_PRIORITY_KEYWORDS",
+      "required": false,
+      "description": "Comma-separated ranking keywords"
+    },
+    {
+      "name": "HEADLESS",
+      "required": false,
+      "default": false,
+      "description": "Run Chromium headless"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "INVITE_DRY_RUN",
+    "npmScript": "invite:lanatus"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": true,
+    "retryOnProfileLock": true,
+    "retryOnSelectorMiss": true,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 1,
+    "authCommand": "auth:linkedin",
+    "profilePath": ".pw-user-data/linkedin"
+  }
+}
