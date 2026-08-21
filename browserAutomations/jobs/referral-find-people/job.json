@@ -1,0 +1,44 @@
+{
+  "id": "referral-find-people",
+  "name": "Find recruiters and peers at job companies",
+  "description": "For companies from jobs.json: find recruiters/talent first, then similar-role peers. Writes people.json.",
+  "entry": "run.ts",
+  "tags": ["referral", "linkedin", "people"],
+  "requiresAuth": true,
+  "env": [
+    {
+      "name": "REFERRAL_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Dry-run flag (discovery is read-only)"
+    },
+    {
+      "name": "REFERRAL_MAX_PEOPLE_PER_COMPANY",
+      "required": false,
+      "default": "3",
+      "description": "Max people per company (recruiters preferred first)"
+    },
+    {
+      "name": "REFERRAL_MAX_RECRUITERS_PER_COMPANY",
+      "required": false,
+      "default": "2",
+      "description": "Prefer this many recruiters before filling with peers"
+    },
+    {
+      "name": "REFERRAL_RUN_ID",
+      "required": false,
+      "description": "Run folder under data/referral/"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "REFERRAL_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": true,
+    "retryOnProfileLock": true,
+    "retryOnSelectorMiss": false,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0
+  }
+}

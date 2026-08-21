@@ -13,6 +13,7 @@ See also `.cursor/rules/browser-automations.mdc` (always applied in this workspa
 | Lead pipeline | `npm run leads:pipeline -- --dry-run` |
 | Visibility pipeline | `npm run visibility:pipeline -- --dry-run` |
 | Content engine (topics → drafts) | `npm run content:pipeline -- --dry-run` |
+| Referral / job hunt pipeline | `npm run referral:pipeline -- --dry-run` |
 | LinkedIn login | `npm run auth:linkedin` |
 | Google / Gmail login | `npm run auth:google` |
 | Send outreach (email or LI connect) | `npm run jobs:run -- lead-send-outreach --dry-run` |
@@ -131,6 +132,34 @@ $env:CONTENT_MAX_VARIATIONS="3"
 npm run content:pipeline -- --dry-run
 ```
 
+## Referral (personal job hunt — not lead-gen)
+
+Search LinkedIn Jobs by role×geo → keep JD keyword matches → find recruiters then peers → draft static connect/referral messages → export.  
+**Connect + follow-up are separate** (review `targets.json` first).
+
+```
+search-jobs → find-people → draft → export
+# then optionally:
+referral-send-connect → referral-followup-accepted
+```
+
+| Intent | Job id |
+|--------|--------|
+| Full referral pipeline | `referral-pipeline` |
+| Search matching jobs | `referral-search-jobs` |
+| Find recruiters + peers | `referral-find-people` |
+| Draft connect note + referral DM | `referral-draft` |
+| Export CSV/JSON | `referral-export` |
+| Send connects | `referral-send-connect` |
+| DM after accept (ask for referral) | `referral-followup-accepted` |
+
+Defaults: roles Full Stack / MERN / React; geos Ahmedabad, Bengaluru, Pune. Artifacts: `data/referral/<runId>/`, `output/referral/<runId>/`.
+
+```powershell
+$env:REFERRAL_MAX_JOBS="5"
+npm run referral:pipeline -- --dry-run
+```
+
 ## Layout
 
 - `jobs/<id>/` — one folder per automation (`job.json` + `run.ts`)
@@ -142,10 +171,12 @@ npm run content:pipeline -- --dry-run
 - `data/visibility/` — visibility run artifacts (gitignored)
 - `data/content/` — content engine artifacts (gitignored except `instructions.md`)
 - `data/content/interest-usage.json` — interest rotation counters (gitignored, auto)
+- `data/referral/` — job-hunt referral run artifacts (gitignored)
 - `data/linkedin-safety/` — daily usage counters + job lock (gitignored)
 - `output/leads/` — CRM/spreadsheet exports (gitignored)
 - `output/visibility/` — draft posts export (gitignored)
 - `output/content/` — scored content drafts export (gitignored)
+- `output/referral/` — jobs + targets CSV/JSON (gitignored)
 
 ## LinkedIn safety (risk reduction — not a ban guarantee)
 

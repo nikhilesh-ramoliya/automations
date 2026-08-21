@@ -38,6 +38,11 @@ data/linkedin-safety/
 output/leads/*/
 !output/leads/.gitignore
 
+# Referral (job hunt) run artifacts
+data/referral/*/
+output/referral/*/
+!output/referral/.gitignore
+
 # Playwright artifacts
 test-results/
 playwright-report/

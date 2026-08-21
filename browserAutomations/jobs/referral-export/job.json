@@ -1,0 +1,24 @@
+{
+  "id": "referral-export",
+  "name": "Export referral jobs and targets",
+  "description": "Export jobs + drafted targets to CSV/JSON under output/referral/<runId>/.",
+  "entry": "run.ts",
+  "tags": ["referral", "export", "csv"],
+  "requiresAuth": false,
+  "linkedinLock": false,
+  "env": [
+    {
+      "name": "REFERRAL_RUN_ID",
+      "required": false,
+      "description": "Run folder under data/referral/"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "REFERRAL_DRY_RUN"
+  },
+  "heal": {
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0
+  }
+}

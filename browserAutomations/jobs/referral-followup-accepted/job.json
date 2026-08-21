@@ -1,0 +1,44 @@
+{
+  "id": "referral-followup-accepted",
+  "name": "Follow up accepted connects with referral DM",
+  "description": "After referral-send-connect: when Message is available, send static referral DM. Default dry-run — not in pipeline.",
+  "entry": "run.ts",
+  "tags": ["referral", "outreach", "linkedin", "followup", "message"],
+  "requiresAuth": true,
+  "env": [
+    {
+      "name": "REFERRAL_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Type DM but do not click Send"
+    },
+    {
+      "name": "REFERRAL_FOLLOWUP_MAX",
+      "required": false,
+      "default": "10",
+      "description": "Max profiles this run"
+    },
+    {
+      "name": "REFERRAL_FOLLOWUP_ONLY_ACCEPTED",
+      "required": false,
+      "default": false,
+      "description": "When true, pending profiles are skipped"
+    },
+    {
+      "name": "REFERRAL_RUN_ID",
+      "required": false,
+      "description": "Run folder under data/referral/"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "REFERRAL_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": true,
+    "retryOnProfileLock": true,
+    "retryOnSelectorMiss": false,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0
+  }
+}

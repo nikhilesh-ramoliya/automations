@@ -1,0 +1,44 @@
+{
+  "id": "referral-send-connect",
+  "name": "Send LinkedIn connect for referral targets",
+  "description": "Send connection requests (optional note) for drafted referral targets. Default dry-run — not in pipeline.",
+  "entry": "run.ts",
+  "tags": ["referral", "outreach", "linkedin", "connect"],
+  "requiresAuth": true,
+  "env": [
+    {
+      "name": "REFERRAL_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "When true, do not click Send on connect"
+    },
+    {
+      "name": "REFERRAL_SEND_MAX",
+      "required": false,
+      "default": "10",
+      "description": "Max connects this run"
+    },
+    {
+      "name": "REFERRAL_SEND_ADD_NOTE",
+      "required": false,
+      "default": true,
+      "description": "Include drafted connect note when LinkedIn allows"
+    },
+    {
+      "name": "REFERRAL_RUN_ID",
+      "required": false,
+      "description": "Run folder under data/referral/"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "REFERRAL_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": true,
+    "retryOnProfileLock": true,
+    "retryOnSelectorMiss": false,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0
+  }
+}

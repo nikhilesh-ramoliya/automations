@@ -1,0 +1,38 @@
+{
+  "id": "referral-pipeline",
+  "name": "Referral job hunt pipeline",
+  "description": "search jobs → find people → draft → export. Connect and follow-up are separate (review first).",
+  "entry": "run.ts",
+  "tags": ["referral", "pipeline", "orchestrator"],
+  "requiresAuth": true,
+  "env": [
+    {
+      "name": "REFERRAL_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Propagated to child steps"
+    },
+    {
+      "name": "REFERRAL_PIPELINE_FROM",
+      "required": false,
+      "description": "Start at this step id"
+    },
+    {
+      "name": "REFERRAL_PIPELINE_TO",
+      "required": false,
+      "description": "Stop after this step id"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "REFERRAL_DRY_RUN",
+    "npmScript": "referral:pipeline"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": true,
+    "retryOnProfileLock": true,
+    "retryOnSelectorMiss": false,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0
+  }
+}

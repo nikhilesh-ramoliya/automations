@@ -1,0 +1,43 @@
+{
+  "id": "referral-draft",
+  "name": "Draft referral connect notes and DMs",
+  "description": "Pair people with jobs at their company and attach static connect note + referral message. Writes targets.json.",
+  "entry": "run.ts",
+  "tags": ["referral", "outreach", "drafts"],
+  "requiresAuth": false,
+  "linkedinLock": false,
+  "env": [
+    {
+      "name": "REFERRAL_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Drafts only — never sends"
+    },
+    {
+      "name": "REFERRAL_CONNECT_NOTE",
+      "required": false,
+      "description": "Override connect note template ({{firstName}}, {{geo}})"
+    },
+    {
+      "name": "REFERRAL_MESSAGE",
+      "required": false,
+      "description": "Override referral DM template ({{firstName}}, {{company}}, {{jobTitle}})"
+    },
+    {
+      "name": "REFERRAL_RUN_ID",
+      "required": false,
+      "description": "Run folder under data/referral/"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "REFERRAL_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": false,
+    "retryOnProfileLock": false,
+    "retryOnSelectorMiss": false,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0
+  }
+}

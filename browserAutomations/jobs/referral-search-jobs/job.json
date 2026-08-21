@@ -1,0 +1,56 @@
+{
+  "id": "referral-search-jobs",
+  "name": "Search LinkedIn jobs for referral targets",
+  "description": "Search LinkedIn Jobs by role×geo, open JDs, keep postings matching REFERRAL_JD_KEYWORDS. Writes jobs.json.",
+  "entry": "run.ts",
+  "tags": ["referral", "linkedin", "jobs", "search"],
+  "requiresAuth": true,
+  "env": [
+    {
+      "name": "REFERRAL_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Dry-run flag (search is read-only either way)"
+    },
+    {
+      "name": "REFERRAL_ROLES",
+      "required": false,
+      "default": "Full Stack Developer,MERN Stack Developer,React Developer",
+      "description": "Comma-separated job title queries"
+    },
+    {
+      "name": "REFERRAL_GEOS",
+      "required": false,
+      "default": "Ahmedabad,Bengaluru,Pune",
+      "description": "Comma-separated locations"
+    },
+    {
+      "name": "REFERRAL_JD_KEYWORDS",
+      "required": false,
+      "default": "react,mern,node,mongodb,express,full stack,javascript,typescript",
+      "description": "Keep job if description matches any keyword"
+    },
+    {
+      "name": "REFERRAL_MAX_JOBS",
+      "required": false,
+      "default": "25",
+      "description": "Max matched jobs to keep this run"
+    },
+    {
+      "name": "REFERRAL_RUN_ID",
+      "required": false,
+      "description": "Run folder under data/referral/ (new id if unset on search)"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "REFERRAL_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": true,
+    "retryOnProfileLock": true,
+    "retryOnSelectorMiss": false,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0
+  }
+}

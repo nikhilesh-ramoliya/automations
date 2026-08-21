@@ -153,6 +153,9 @@ Heal attempts are logged under `logs/<jobId>-heal-*.jsonl`.
 | LinkedIn login | `npm run auth:linkedin` |
 | Invite Lanatus (alias) | `npm run invite:lanatus` |
 | Lead pipeline | `npm run leads:pipeline` |
+| Visibility pipeline | `npm run visibility:pipeline` |
+| Content engine | `npm run content:pipeline` |
+| Referral / job hunt | `npm run referral:pipeline` |
 | Session logger | `npm run session:linkedin` |
 | Record actions | `npm run record:linkedin` |
 | Workflow from recording | `npm run workflow:from-recording` |

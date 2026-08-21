@@ -1,0 +1,3 @@
+# Keep output/referral/ in git; run folders are ignored via ../.gitignore
+*
+!.gitignore
