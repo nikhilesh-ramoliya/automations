@@ -2,7 +2,7 @@
  * LinkedIn connection request (with optional note) for people without email.
  */
 
-import type { Page } from "playwright";
+import type { Locator, Page } from "playwright";
 import { humanBrowseProfile } from "../human-browse.js";
 import {
   assertWithinCap,
@@ -32,49 +32,118 @@ function truncateNote(body: string): string {
   return t.slice(0, NOTE_MAX - 1).trimEnd() + "…";
 }
 
-/** Detect Pending / Message / Connect on a profile without mutating UI. */
+async function isVisibleLoose(locator: Locator): Promise<boolean> {
+  const first = locator.first();
+  if (await first.isVisible().catch(() => false)) return true;
+  return first.isVisible({ timeout: 800 }).catch(() => false);
+}
+
+/** Profile identity + action row only — never sidebar "More profiles". */
+export function profileIntro(page: Page): Locator {
+  return page
+    .locator(
+      [
+        '[data-view-name="profile-top-card"]',
+        "section.artdeco-card.pv-top-card",
+        ".pv-top-card",
+        "main section",
+      ].join(", "),
+    )
+    .first();
+}
+
+type IntroSignals = {
+  degree: "1st" | "2nd" | "3rd" | "unknown";
+  pending: boolean;
+  connect: boolean;
+  message: boolean;
+  newConnection: boolean;
+};
+
+export async function readIntroSignals(page: Page): Promise<IntroSignals> {
+  const intro = profileIntro(page);
+  await intro.waitFor({ state: "visible", timeout: 8000 }).catch(() => undefined);
+
+  return intro.evaluate((root) => {
+    const el = root as HTMLElement;
+    const text = (el.innerText || "").slice(0, 2500);
+    const head = text.split("\n").slice(0, 12).join(" ");
+    const buttons = Array.from(root.querySelectorAll("button, a")).map((el) =>
+      ((el.getAttribute("aria-label") || "") + " " + (el.textContent || ""))
+        .replace(/\s+/g, " ")
+        .trim()
+        .toLowerCase(),
+    );
+
+    const pending = buttons.some((b) => /\bpending\b/.test(b));
+    const connect = buttons.some(
+      (b) => /\bconnect\b/.test(b) && !/\bpending\b/.test(b) && !/\bmessage\b/.test(b),
+    );
+    const message = buttons.some((b) => /\bmessage\b/.test(b));
+
+    let degree: IntroSignals["degree"] = "unknown";
+    if (/(^|[^a-z0-9])1st([^a-z0-9]|$)/i.test(head)) degree = "1st";
+    else if (/(^|[^a-z0-9])2nd([^a-z0-9]|$)/i.test(head)) degree = "2nd";
+    else if (/(^|[^a-z0-9])3rd([^a-z0-9]|$)/i.test(head)) degree = "3rd";
+
+    const newConnection = /is a new connection/i.test(text);
+    return { degree, pending, connect, message, newConnection };
+  });
+}
+
+export async function hasPendingInvite(page: Page): Promise<boolean> {
+  const signals = await readIntroSignals(page).catch(() => null);
+  return signals?.pending ?? false;
+}
+
+export async function isNonFirstDegree(page: Page): Promise<boolean> {
+  const signals = await readIntroSignals(page).catch(() => null);
+  return signals?.degree === "2nd" || signals?.degree === "3rd";
+}
+
+export async function hasConnectButton(page: Page): Promise<boolean> {
+  const signals = await readIntroSignals(page).catch(() => null);
+  return signals?.connect ?? false;
+}
+
+export async function hasMessageButton(page: Page): Promise<boolean> {
+  const signals = await readIntroSignals(page).catch(() => null);
+  return signals?.message ?? false;
+}
+
+/**
+ * Detect relationship from the profile intro only.
+ *
+ * Accepted 1st-degree: "1st" and/or "is a new connection" + Message, no Pending.
+ * InMail trap: 2nd/3rd + Message + Pending → pending (do not DM).
+ */
 export async function detectConnectionState(
   page: Page,
 ): Promise<ConnectionState> {
-  const pending = page.getByRole("button", { name: /^pending$/i }).first();
-  if (await pending.isVisible().catch(() => false)) return "pending";
-
-  const message = page
-    .getByRole("button", { name: /^message$/i })
-    .or(page.getByRole("link", { name: /^message$/i }))
-    .first();
-  if (await message.isVisible().catch(() => false)) {
-    return "message";
+  const s = await readIntroSignals(page);
+  if (s.pending) return "pending";
+  if (s.degree === "1st" || s.newConnection) {
+    if (s.message) return "message";
   }
-
-  const connect = page
-    .getByRole("button", { name: /^connect$/i })
-    .or(page.locator('button[aria-label*="Invite"][aria-label*="connect" i]'))
-    .first();
-  if (await connect.isVisible().catch(() => false)) {
-    return "connect";
+  if (s.degree === "2nd" || s.degree === "3rd") {
+    return s.connect ? "connect" : "pending";
   }
-
+  if (s.connect) return "connect";
+  if (s.message) return "message";
   return "none";
 }
 
 async function clickConnectEntry(
   page: Page,
 ): Promise<"connect" | "pending" | "message" | "none"> {
-  const pending = page.getByRole("button", { name: /^pending$/i }).first();
-  if (await pending.isVisible().catch(() => false)) return "pending";
+  const state = await detectConnectionState(page);
+  if (state === "pending") return "pending";
+  if (state === "message") return "message";
 
-  const message = page
-    .getByRole("button", { name: /^message$/i })
-    .or(page.getByRole("link", { name: /^message$/i }))
-    .first();
-  if (await message.isVisible().catch(() => false)) {
-    return "message";
-  }
-
-  const connect = page
+  const intro = profileIntro(page);
+  const connect = intro
     .getByRole("button", { name: /^connect$/i })
-    .or(page.locator('button[aria-label*="Invite"][aria-label*="connect" i]'))
+    .or(intro.locator('button[aria-label*="Invite"][aria-label*="connect" i]'))
     .first();
   if (await connect.isVisible().catch(() => false)) {
     await humanDelay("click");

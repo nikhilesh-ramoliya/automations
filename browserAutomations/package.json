@@ -14,6 +14,7 @@
     "leads:pipeline": "tsx scripts/jobs-cli.ts run lead-pipeline",
     "visibility:pipeline": "tsx scripts/jobs-cli.ts run visibility-pipeline",
     "content:pipeline": "tsx scripts/jobs-cli.ts run content-pipeline",
+    "connections:followup": "tsx scripts/jobs-cli.ts run connection-followup-message --dry-run",
     "safety:status": "tsx scripts/linkedin-safety-status.ts",
     "record:linkedin": "tsx automations/linkedin-record.ts",
     "workflow:from-recording": "tsx automations/generate-workflow-from-recording.ts",

@@ -17,6 +17,7 @@ See also `.cursor/rules/browser-automations.mdc` (always applied in this workspa
 | Google / Gmail login | `npm run auth:google` |
 | Send outreach (email or LI connect) | `npm run jobs:run -- lead-send-outreach --dry-run` |
 | Follow up accepted connects / message after connect | `npm run jobs:run -- lead-followup-accepted --dry-run` |
+| Extension captures → Supabase → message on accept | `npm run connections:followup` |
 
 ## Lead generation
 

@@ -33,6 +33,9 @@ data/content/recent-fingerprints.json
 data/content/interest-usage.json
 output/content/*/
 !output/content/.gitignore
+# Supabase connection follow-up run artifacts
+data/connections/
+
 # LinkedIn daily usage counters + job lock
 data/linkedin-safety/
 output/leads/*/

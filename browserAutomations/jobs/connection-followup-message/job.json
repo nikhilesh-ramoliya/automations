@@ -1,0 +1,61 @@
+{
+  "id": "connection-followup-message",
+  "name": "Message accepted connections (Supabase)",
+  "description": "Reads pending rows from Supabase connection_requests (Chrome extension capture), sends a LinkedIn DM when Message is available, then deletes the row on successful send. Default dry-run.",
+  "entry": "run.ts",
+  "tags": ["connections", "supabase", "linkedin", "followup", "message", "extension"],
+  "requiresAuth": true,
+  "env": [
+    {
+      "name": "CONNECTION_FOLLOWUP_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "When true, type the DM but do not click Send or delete from Supabase"
+    },
+    {
+      "name": "CONNECTION_FOLLOWUP_MAX",
+      "required": false,
+      "default": "10",
+      "description": "Max pending Supabase rows to process this run"
+    },
+    {
+      "name": "CONNECTION_FOLLOWUP_ONLY_ACCEPTED",
+      "required": false,
+      "default": true,
+      "description": "When true, skip profiles still pending (Connect not yet accepted)"
+    },
+    {
+      "name": "CONNECTION_FOLLOWUP_SERVICE",
+      "required": false,
+      "default": "custom software",
+      "description": "Service label used in follow-up message templates"
+    },
+    {
+      "name": "SUPABASE_URL",
+      "required": true,
+      "description": "Supabase project URL (same as extension VITE_SUPABASE_URL)"
+    },
+    {
+      "name": "SUPABASE_PUBLISHABLE_KEY",
+      "required": true,
+      "description": "Publishable/anon key for SELECT (same as extension)"
+    },
+    {
+      "name": "SUPABASE_SERVICE_ROLE_KEY",
+      "required": false,
+      "description": "Secret key for DELETE after live send — required for --no-dry-run"
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "CONNECTION_FOLLOWUP_DRY_RUN",
+    "npmScript": "connections:followup"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": true,
+    "retryOnProfileLock": true,
+    "retryOnSelectorMiss": false,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0
+  }
+}
