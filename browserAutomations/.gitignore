@@ -38,6 +38,20 @@ data/linkedin-safety/
 output/leads/*/
 !output/leads/.gitignore
 
+# Referral (job hunt) run artifacts
+data/referral/*/
+output/referral/*/
+!output/referral/.gitignore
+
+# Naukri job search / apply artifacts
+data/naukri/*/
+data/naukri/*.pdf
+data/naukri/resume.pdf
+data/naukri-safety/
+data/naukri-agent-store/
+output/naukri/*/
+!output/naukri/.gitignore
+
 # Playwright artifacts
 test-results/
 playwright-report/

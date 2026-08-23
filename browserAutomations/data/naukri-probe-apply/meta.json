@@ -1,0 +1,30 @@
+{
+  "runId": "probe-apply",
+  "createdAt": "2026-08-21T18:36:48.239Z",
+  "updatedAt": "2026-08-21T18:41:33.370Z",
+  "config": {
+    "roles": [
+      "Full Stack Developer",
+      "MERN Stack Developer",
+      "React Developer"
+    ],
+    "geos": [
+      "Ahmedabad",
+      "Bengaluru",
+      "Pune"
+    ],
+    "keywords": [
+      "react",
+      "mern",
+      "node",
+      "mongodb",
+      "express",
+      "full stack",
+      "javascript",
+      "typescript"
+    ],
+    "maxJobs": 50,
+    "dryRun": false
+  },
+  "stepsCompleted": []
+}

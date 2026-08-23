@@ -1,0 +1,3 @@
+# Keep output/naukri/ in git; run folders are ignored via ../.gitignore
+*
+!.gitignore

@@ -1,0 +1,23 @@
+{
+  "id": "naukri-export",
+  "name": "Export Naukri jobs",
+  "description": "Export jobs.json to CSV/JSON under output/naukri/<runId>/.",
+  "entry": "run.ts",
+  "tags": ["naukri", "export", "csv"],
+  "requiresAuth": false,
+  "linkedinLock": false,
+  "env": [
+    {
+      "name": "NAUKRI_RUN_ID",
+      "required": false
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "NAUKRI_DRY_RUN"
+  },
+  "heal": {
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0
+  }
+}

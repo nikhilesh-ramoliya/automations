@@ -1,0 +1,53 @@
+{
+  "id": "naukri-search-jobs",
+  "name": "Search Naukri jobs",
+  "description": "Search Naukri by role×geo, filter by keywords, write jobs.json under data/naukri/<runId>/.",
+  "entry": "run.ts",
+  "tags": ["naukri", "jobs", "search"],
+  "requiresAuth": false,
+  "linkedinLock": false,
+  "env": [
+    {
+      "name": "NAUKRI_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "Search is read-only either way"
+    },
+    {
+      "name": "NAUKRI_ROLES",
+      "required": false,
+      "default": "Full Stack Developer,MERN Stack Developer,React Developer"
+    },
+    {
+      "name": "NAUKRI_GEOS",
+      "required": false,
+      "default": "Ahmedabad,Bengaluru,Pune"
+    },
+    {
+      "name": "NAUKRI_KEYWORDS",
+      "required": false,
+      "default": "react,mern,node,mongodb,express,full stack,javascript,typescript"
+    },
+    {
+      "name": "NAUKRI_MAX_JOBS",
+      "required": false,
+      "default": "25"
+    },
+    {
+      "name": "NAUKRI_RUN_ID",
+      "required": false
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "NAUKRI_DRY_RUN"
+  },
+  "heal": {
+    "reauthOnLoginRedirect": false,
+    "retryOnProfileLock": true,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0,
+    "authCommand": "auth:naukri",
+    "profilePath": ".pw-user-data/naukri"
+  }
+}

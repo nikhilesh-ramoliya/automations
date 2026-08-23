@@ -1,0 +1,40 @@
+{
+  "id": "naukri-pipeline",
+  "name": "Naukri job search pipeline",
+  "description": "search jobs → export → apply (set NAUKRI_PIPELINE_SKIP_APPLY=true to stop before apply).",
+  "entry": "run.ts",
+  "tags": ["naukri", "pipeline", "orchestrator"],
+  "requiresAuth": true,
+  "linkedinLock": false,
+  "env": [
+    {
+      "name": "NAUKRI_DRY_RUN",
+      "required": false,
+      "default": true
+    },
+    {
+      "name": "NAUKRI_PIPELINE_FROM",
+      "required": false
+    },
+    {
+      "name": "NAUKRI_PIPELINE_TO",
+      "required": false
+    },
+    {
+      "name": "NAUKRI_PIPELINE_SKIP_APPLY",
+      "required": false,
+      "default": false
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "NAUKRI_DRY_RUN",
+    "npmScript": "naukri:pipeline"
+  },
+  "heal": {
+    "softExitOnZeroBatch": true,
+    "maxRetries": 1,
+    "authCommand": "auth:naukri",
+    "profilePath": ".pw-user-data/naukri"
+  }
+}

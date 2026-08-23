@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-05T08:19:29.206Z",
+  "generatedAt": "2026-08-21T16:43:38.211Z",
   "jobs": [
     {
       "id": "content-compose-draft",
@@ -227,6 +227,144 @@
       "requiresAuth": true,
       "entry": "linkedin-invite-follow-lanatus/run.ts",
       "npmScript": "invite:lanatus"
+    },
+    {
+      "id": "naukri-apply",
+      "name": "Apply to Naukri jobs one by one",
+      "description": "Apply to listed jobs sequentially (Naukri site apply). Default dry-run — not in default pipeline.",
+      "tags": [
+        "naukri",
+        "apply",
+        "jobs"
+      ],
+      "requiresAuth": false,
+      "entry": "naukri-apply/run.ts"
+    },
+    {
+      "id": "naukri-export",
+      "name": "Export Naukri jobs",
+      "description": "Export jobs.json to CSV/JSON under output/naukri/<runId>/.",
+      "tags": [
+        "naukri",
+        "export",
+        "csv"
+      ],
+      "requiresAuth": false,
+      "entry": "naukri-export/run.ts"
+    },
+    {
+      "id": "naukri-pipeline",
+      "name": "Naukri job search pipeline",
+      "description": "search jobs → export list. Apply is separate (review first).",
+      "tags": [
+        "naukri",
+        "pipeline",
+        "orchestrator"
+      ],
+      "requiresAuth": false,
+      "entry": "naukri-pipeline/run.ts",
+      "npmScript": "naukri:pipeline"
+    },
+    {
+      "id": "naukri-search-jobs",
+      "name": "Search Naukri jobs",
+      "description": "Search Naukri by role×geo, filter by keywords, write jobs.json under data/naukri/<runId>/.",
+      "tags": [
+        "naukri",
+        "jobs",
+        "search"
+      ],
+      "requiresAuth": false,
+      "entry": "naukri-search-jobs/run.ts"
+    },
+    {
+      "id": "referral-draft",
+      "name": "Draft referral connect notes and DMs",
+      "description": "Pair people with jobs at their company and attach static connect note + referral message. Writes targets.json.",
+      "tags": [
+        "referral",
+        "outreach",
+        "drafts"
+      ],
+      "requiresAuth": false,
+      "entry": "referral-draft/run.ts"
+    },
+    {
+      "id": "referral-export",
+      "name": "Export referral jobs and targets",
+      "description": "Export jobs + drafted targets to CSV/JSON under output/referral/<runId>/.",
+      "tags": [
+        "referral",
+        "export",
+        "csv"
+      ],
+      "requiresAuth": false,
+      "entry": "referral-export/run.ts"
+    },
+    {
+      "id": "referral-find-people",
+      "name": "Find recruiters and peers at job companies",
+      "description": "For companies from jobs.json: find recruiters/talent first, then similar-role peers. Writes people.json.",
+      "tags": [
+        "referral",
+        "linkedin",
+        "people"
+      ],
+      "requiresAuth": true,
+      "entry": "referral-find-people/run.ts"
+    },
+    {
+      "id": "referral-followup-accepted",
+      "name": "Follow up accepted connects with referral DM",
+      "description": "After referral-send-connect: when Message is available, send static referral DM. Default dry-run — not in pipeline.",
+      "tags": [
+        "referral",
+        "outreach",
+        "linkedin",
+        "followup",
+        "message"
+      ],
+      "requiresAuth": true,
+      "entry": "referral-followup-accepted/run.ts"
+    },
+    {
+      "id": "referral-pipeline",
+      "name": "Referral job hunt pipeline",
+      "description": "search jobs → find people → draft → export. Connect and follow-up are separate (review first).",
+      "tags": [
+        "referral",
+        "pipeline",
+        "orchestrator"
+      ],
+      "requiresAuth": true,
+      "entry": "referral-pipeline/run.ts",
+      "npmScript": "referral:pipeline"
+    },
+    {
+      "id": "referral-search-jobs",
+      "name": "Search LinkedIn jobs for referral targets",
+      "description": "Search LinkedIn Jobs by role×geo, open JDs, keep postings matching REFERRAL_JD_KEYWORDS. Writes jobs.json.",
+      "tags": [
+        "referral",
+        "linkedin",
+        "jobs",
+        "search"
+      ],
+      "requiresAuth": true,
+      "entry": "referral-search-jobs/run.ts"
+    },
+    {
+      "id": "referral-send-connect",
+      "name": "Send LinkedIn connect for referral targets",
+      "description": "Send connection requests (optional note) for drafted referral targets. Default dry-run — not in pipeline.",
+      "tags": [
+        "referral",
+        "outreach",
+        "linkedin",
+        "connect"
+      ],
+      "requiresAuth": true,
+      "entry": "referral-send-connect/run.ts"
     },
     {
       "id": "visibility-draft-posts",

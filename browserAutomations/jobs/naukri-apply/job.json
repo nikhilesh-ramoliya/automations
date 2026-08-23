@@ -1,0 +1,44 @@
+{
+  "id": "naukri-apply",
+  "name": "Apply to Naukri jobs one by one",
+  "description": "Apply to listed jobs sequentially (Naukri site apply). Default dry-run — not in default pipeline.",
+  "entry": "run.ts",
+  "tags": ["naukri", "apply", "jobs"],
+  "requiresAuth": false,
+  "linkedinLock": false,
+  "env": [
+    {
+      "name": "NAUKRI_DRY_RUN",
+      "required": false,
+      "default": true,
+      "description": "When true, click through UI but do not confirm apply"
+    },
+    {
+      "name": "NAUKRI_APPLY_MAX",
+      "required": false,
+      "default": "10",
+      "description": "Max applications this run"
+    },
+    {
+      "name": "NAUKRI_SKIP_EXTERNAL_APPLY",
+      "required": false,
+      "default": true,
+      "description": "Skip company-website-only applies"
+    },
+    {
+      "name": "NAUKRI_RUN_ID",
+      "required": false
+    }
+  ],
+  "run": {
+    "defaultDryRun": true,
+    "dryRunEnv": "NAUKRI_DRY_RUN"
+  },
+  "heal": {
+    "retryOnProfileLock": true,
+    "softExitOnZeroBatch": true,
+    "maxRetries": 0,
+    "authCommand": "auth:naukri",
+    "profilePath": ".pw-user-data/naukri"
+  }
+}

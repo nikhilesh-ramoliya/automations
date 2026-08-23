@@ -43,6 +43,13 @@ Jobs live in `jobs/<id>/` with `job.json` + `run.ts`. Snapshot: `jobs/registry.j
 | draft LinkedIn posts for visibility | `visibility-draft-posts` |
 | content engine / research topics / authority drafts | `content-pipeline` or `content-research-topics` |
 | generate scored LinkedIn post drafts | `content-generate-posts` |
+| referral / job hunt / ask for referral | `referral-pipeline` or `referral-search-jobs` |
+| find recruiters at job companies | `referral-find-people` |
+| send referral connects | `referral-send-connect` |
+| message after accept for referral | `referral-followup-accepted` |
+| naukri login / session | `npm run auth:naukri` |
+| naukri find jobs / list jobs | `naukri-pipeline` or `naukri-search-jobs` |
+| naukri apply | `naukri-apply` |
 
 Prefer tags + description in `job.json` when unsure. Do **not** invent job ids.
 
@@ -93,6 +100,35 @@ npm run jobs:run -- content-pipeline --dry-run
 # or npm run content:pipeline -- --dry-run
 ```
 
+## Referral pipeline (personal job hunt)
+
+```
+search-jobs → find-people → draft → export
+# connect + follow-up are separate (review first)
+```
+
+Defaults: Full Stack / MERN / React · Ahmedabad, Bengaluru, Pune. Recruiters first, then peers. Static referral DM after accept.
+
+```powershell
+$env:REFERRAL_MAX_JOBS="5"
+npm run referral:pipeline -- --dry-run
+```
+
+## Naukri pipeline (job search + apply)
+
+```
+search-jobs → export
+# apply is separate (review first)
+```
+
+Separate Chromium profile from LinkedIn. Caps in `lib/naukri/safety.ts` (`NAUKRI_SAFE_*`).
+
+```powershell
+npm run auth:naukri
+$env:NAUKRI_MAX_JOBS="5"
+npm run naukri:pipeline -- --dry-run
+```
+
 ## Run
 
 ```powershell
@@ -106,9 +142,13 @@ npm run leads:pipeline
 npm run visibility:pipeline
 # Alias for content engine:
 npm run content:pipeline
+# Alias for referral / job hunt:
+npm run referral:pipeline
+# Alias for Naukri:
+npm run naukri:pipeline
 ```
 
-Pass job env via PowerShell (`$env:INVITE_MAX="5"`) or `.env`. `--dry-run` sets the job's `run.dryRunEnv` (e.g. `INVITE_DRY_RUN` / `LEAD_DRY_RUN` / `VISIBILITY_DRY_RUN` / `CONTENT_DRY_RUN`) and `DRY_RUN`.
+Pass job env via PowerShell (`$env:INVITE_MAX="5"`) or `.env`. `--dry-run` sets the job's `run.dryRunEnv` (e.g. `INVITE_DRY_RUN` / `LEAD_DRY_RUN` / `VISIBILITY_DRY_RUN` / `CONTENT_DRY_RUN` / `REFERRAL_DRY_RUN` / `NAUKRI_DRY_RUN`) and `DRY_RUN`.
 
 Always dry-run first unless the user explicitly wants a live send.
 
