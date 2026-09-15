@@ -91,6 +91,8 @@ export type ContentDraft = {
   refined?: boolean;
   /** Remaining or noted instruction issues after validate/refine */
   instructionIssues?: string[];
+  /** Local PNG/JPG attached at compose time */
+  imagePath?: string;
 };
 
 export const CONTENT_ARTIFACTS = {

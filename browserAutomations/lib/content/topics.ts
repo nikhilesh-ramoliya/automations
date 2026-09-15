@@ -301,7 +301,11 @@ export function researchTopicsFromTemplates(input: {
         : audiences[i % audiences.length]!;
     const interest = assignInterest(seed);
     return {
-      id: slugId("topic", `${seed.title}-${i}`),
+      id: slugId(
+        "topic",
+        seed.title,
+        `${process.env.CONTENT_RUN_ID ?? "run"}-${i}`,
+      ),
       title: seed.title,
       summary: seed.summary,
       category: seed.category,
@@ -381,7 +385,11 @@ async function researchTopicsWithAi(input: {
         focusInterests[i % Math.max(focusInterests.length, 1)] ??
         interests[0];
       return {
-        id: slugId("topic", `${t.title}-${i}`),
+        id: slugId(
+          "topic",
+          t.title!,
+          `${process.env.CONTENT_RUN_ID ?? "run"}-${i}`,
+        ),
         title: t.title!.trim(),
         summary: t.summary!.trim(),
         category: (t.category ?? input.categories[0] ?? "AI").trim(),

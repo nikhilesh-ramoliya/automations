@@ -1,7 +1,7 @@
 # Content instructions
 
 Required rules only. Edit freely — the engine loads this on research, generate, and compose.
-Use `- ` bullets. Quoted phrases under **Never** are blocked literally (case-insensitive).
+Use `-`  bullets. Quoted phrases under **Never** are blocked literally (case-insensitive).
 
 ## Interests
 
@@ -9,7 +9,7 @@ Themes every topic and post should clearly relate to. Usage is tracked so runs r
 
 - AI automation
 - AI agents
-- Engineering leadership
+- MERN stack
 - Software architecture
 
 ## Must
@@ -17,10 +17,31 @@ Themes every topic and post should clearly relate to. Usage is tracked so runs r
 - Strong opening hook in the first 1–2 lines
 - At least one practical insight a practitioner can use
 - End with exactly one discussion question
+- Should be every easy to understand for junior developer to senior developer
 - Body 150–300 words (excluding hashtags)
-- 3–5 relevant hashtags
+- 5–7 relevant hashtags
 - Zero emojis (one maximum)
 - Clearly relate to at least one Interests theme above
+
+
+
+## Image
+
+Title card (1200×627) generated at compose. Edit these like Must/Never.
+Keyed lines set layout/copy; other bullets are freeform rules for the designer.
+
+- Name: Nikhilesh Ramoliya
+- Role: Full Stack Developer
+- Handle:
+- Style: dark editorial title card, generous whitespace, no stock photos or illustrations
+- Palette: deep navy background, ice-blue accent, white headline
+- Layout: category kicker + short headline + optional one-line subhead + byline
+- Headline: rewrite the topic into ≤ 8 concrete words; no clickbait
+- Do not put the full post body, hashtags, or a company logo on the card
+- make it instresting as more as possible
+- No emojis
+
+
 
 ## Never
 
@@ -31,3 +52,4 @@ Themes every topic and post should clearly relate to. Usage is tracked so runs r
 - No guaranteed outcomes: `"100%"`, `"guaranteed results"`
 - No emoji spam or hashtag walls
 - Do not drift into unrelated niches outside Interests
+

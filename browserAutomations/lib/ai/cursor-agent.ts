@@ -25,8 +25,18 @@ export function cursorModelId(): string {
   return (
     process.env.CONTENT_CURSOR_MODEL?.trim() ||
     process.env.CURSOR_MODEL?.trim() ||
-    ""
+    "composer-2.5"
   );
+}
+
+function isTransientCursorError(message: string): boolean {
+  return /Failed to reach the Cursor API|Connection lost|ECONNRESET|ETIMEDOUT|ENOTFOUND|socket hang up|EAI_AGAIN|Failed to load models/i.test(
+    message,
+  );
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /** Isolated empty cwd so ask-mode does not wander the real repo. */
@@ -173,13 +183,56 @@ function runAgentCli(args: string[]): Promise<string> {
     ...(apiKey ? { CURSOR_API_KEY: apiKey } : {}),
   };
 
+  return runAgentCliWithRetry(launch, args, timeoutMs, cwd, env);
+}
+
+async function runAgentCliWithRetry(
+  launch: AgentLaunch,
+  args: string[],
+  timeoutMs: number,
+  cwd: string,
+  env: NodeJS.ProcessEnv,
+): Promise<string> {
+  const maxAttempts = Math.max(
+    1,
+    Number(process.env.CONTENT_CURSOR_RETRIES ?? 4),
+  );
+  const baseMs = Math.max(
+    1000,
+    Number(process.env.CONTENT_CURSOR_RETRY_MS ?? 8000),
+  );
+  let lastErr: Error | undefined;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await runAgentCliOnce(launch, args, timeoutMs, cwd, env);
+    } catch (err) {
+      lastErr = err instanceof Error ? err : new Error(String(err));
+      if (!isTransientCursorError(lastErr.message) || attempt === maxAttempts) {
+        throw lastErr;
+      }
+      const wait = baseMs * attempt;
+      console.warn(
+        `[content] Cursor API unreachable (attempt ${attempt}/${maxAttempts}). Retrying in ${Math.round(wait / 1000)}s…`,
+      );
+      await sleep(wait);
+    }
+  }
+  throw lastErr ?? new Error("Cursor CLI failed");
+}
+
+function runAgentCliOnce(
+  launch: AgentLaunch,
+  args: string[],
+  timeoutMs: number,
+  cwd: string,
+  env: NodeJS.ProcessEnv,
+): Promise<string> {
   const spawnCmd =
     launch.kind === "node"
       ? { command: launch.node, argv: [launch.script, ...args], shell: false }
       : {
           command: launch.bin,
           argv: args,
-          // Windows .cmd needs a shell; avoid for long prompts when possible
           shell: process.platform === "win32",
         };
 

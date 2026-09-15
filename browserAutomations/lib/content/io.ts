@@ -138,11 +138,25 @@ export function resolveContentOutputDir(runId: string): string {
   return out;
 }
 
-export function slugId(prefix: string, value: string): string {
+/**
+ * Readable id: prefix + truncated slug + uniqueness suffix.
+ * The suffix is never truncated, so run / angle / index stay unique.
+ */
+export function slugId(
+  prefix: string,
+  value: string,
+  uniqueness?: string,
+): string {
   const slug = value
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
-    .slice(0, 48);
-  return `${prefix}-${slug || "x"}`;
+    .slice(0, 36);
+  const extra = (uniqueness ?? "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return extra
+    ? `${prefix}-${slug || "x"}-${extra}`
+    : `${prefix}-${slug || "x"}`;
 }

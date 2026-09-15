@@ -11,10 +11,13 @@ import {
   humanDelay,
   recordAction,
 } from "../linkedin-safety.js";
+import { contentAttachImage } from "./env.js";
+import { defaultCardPath, renderDraftCard } from "./image-card.js";
 import {
   loadContentInstructions,
   validateAndRefineDraft,
 } from "./instructions.js";
+import { attachImageToComposer } from "./linkedin-media.js";
 import { formatDraftForLinkedIn } from "./posts.js";
 import { attachScore } from "./scoring.js";
 import type { ContentDraft, ContentTopic } from "./types.js";
@@ -25,25 +28,39 @@ export type ComposeResult = {
   draftId: string;
   notes: string[];
   textPreview: string;
+  imagePath?: string;
 };
 
 async function findStartPostTrigger(page: Page): Promise<Locator | null> {
   const candidates = [
     page.getByRole("button", { name: /start a post/i }),
+    page.getByRole("button", { name: /share your thoughts|start post/i }),
     page.locator("button.share-box-feed-entry__trigger"),
     page.locator(".share-box-feed-entry__trigger"),
     page.locator('[data-control-name="share.share"]'),
     page.locator('button:has-text("Start a post")'),
+    page.locator(".share-box-feed-entry__closed-share-box"),
+    page.getByText("Start a post", { exact: false }),
   ];
   for (const loc of candidates) {
     const first = loc.first();
-    if (await first.isVisible().catch(() => false)) return first;
+    if (await first.isVisible({ timeout: 1500 }).catch(() => false)) return first;
   }
   return null;
 }
 
-async function findShareEditor(page: Page): Promise<Locator | null> {
-  const candidates = [
+function shareEditorCandidates(page: Page): Locator[] {
+  const dialog = page.locator(
+    '[role="dialog"], .artdeco-modal, .share-creation-state, .share-box',
+  );
+  return [
+    dialog.locator("div.ql-editor[contenteditable='true']"),
+    dialog.locator('[contenteditable="true"][data-placeholder]'),
+    dialog.locator(
+      '[contenteditable="true"][aria-label*="text editor" i], [contenteditable="true"][aria-label*="editor" i]',
+    ),
+    dialog.locator('div[role="textbox"][contenteditable="true"]'),
+    dialog.locator('[contenteditable="true"]'),
     page.locator(".share-creation-state div.ql-editor[contenteditable='true']"),
     page.locator(".share-box div.ql-editor[contenteditable='true']"),
     page.locator("div.ql-editor[contenteditable='true']"),
@@ -51,17 +68,46 @@ async function findShareEditor(page: Page): Promise<Locator | null> {
       '[data-placeholder*="What do you want to talk about"][contenteditable="true"]',
     ),
     page.locator(
+      '[data-placeholder*="Share your thoughts"][contenteditable="true"]',
+    ),
+    page.locator(
       'div[role="textbox"][contenteditable="true"][aria-label*="Text editor" i]',
     ),
     page.locator('div[role="textbox"][contenteditable="true"]'),
+    page.locator('[contenteditable="true"][role="textbox"]'),
   ];
-  for (const loc of candidates) {
-    const first = loc.first();
-    if (await first.isVisible({ timeout: 2500 }).catch(() => false)) {
-      return first;
+}
+
+async function findShareEditor(
+  page: Page,
+  timeoutMs = 12_000,
+): Promise<Locator | null> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    for (const loc of shareEditorCandidates(page)) {
+      const first = loc.first();
+      if (await first.isVisible({ timeout: 400 }).catch(() => false)) {
+        return first;
+      }
     }
+    await page.waitForTimeout(350);
   }
   return null;
+}
+
+/** Feed "Start a post" sometimes opens a media/post type menu first. */
+async function pickWritePostIfMenu(page: Page): Promise<void> {
+  const write = page
+    .getByRole("button", { name: /^post$/i })
+    .or(page.getByRole("menuitem", { name: /^post$/i }))
+    .or(page.getByRole("button", { name: /write a post|start a post/i }))
+    .first();
+  if (await write.isVisible({ timeout: 1200 }).catch(() => false)) {
+    const editorAlready = await findShareEditor(page, 800);
+    if (!editorAlready) {
+      await write.click().catch(() => undefined);
+    }
+  }
 }
 
 async function findPostButton(page: Page): Promise<Locator | null> {
@@ -89,7 +135,8 @@ async function typeIntoEditor(
   await humanDelay("idle_micro");
 
   // Clear any placeholder / leftover
-  await page.keyboard.press("Control+A").catch(() => undefined);
+  const selectAll = process.platform === "darwin" ? "Meta+A" : "Control+A";
+  await page.keyboard.press(selectAll).catch(() => undefined);
   await page.keyboard.press("Backspace").catch(() => undefined);
 
   // Human-ish typing; fall back to fill for long posts
@@ -123,6 +170,10 @@ export async function composeLinkedInDraft(
     reviewMs?: number;
     doPublish?: boolean;
     topic?: ContentTopic;
+    /** Run folder used to store generated cards. */
+    runDir?: string;
+    /** Existing image to attach instead of generating a card. */
+    imagePath?: string;
   },
 ): Promise<ComposeResult> {
   const notes: string[] = [];
@@ -163,6 +214,20 @@ export async function composeLinkedInDraft(
 
   const text = formatDraftForLinkedIn(working);
   const preview = text.slice(0, 120).replace(/\n/g, " ");
+
+  if (contentAttachImage() && options.runDir && !options.imagePath && !working.imagePath) {
+    try {
+      const cardPath = defaultCardPath(options.runDir, working.id);
+      await renderDraftCard(working, cardPath);
+      working.imagePath = cardPath;
+      notes.push("image_card_rendered");
+    } catch (err) {
+      notes.push(
+        `image_card_failed:${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
+  }
+
   const allowPublish =
     !options.dryRun &&
     (options.doPublish === true ||
@@ -185,16 +250,25 @@ export async function composeLinkedInDraft(
       published: false,
       draftId: working.id,
       notes,
+      imagePath: working.imagePath,
       textPreview: preview,
     };
   }
 
   await humanDelay("click");
   await trigger.click();
-  await humanDelay("type_burst", { minMs: 1500, maxMs: 3000 });
+  await page
+    .locator(
+      'button[aria-label="Media"], [role="dialog"], .artdeco-modal, .share-creation-state',
+    )
+    .first()
+    .waitFor({ state: "visible", timeout: 12_000 })
+    .catch(() => undefined);
+  await pickWritePostIfMenu(page);
+  await humanDelay("type_burst", { minMs: 1200, maxMs: 2200 });
   notes.push("composer_opened");
 
-  const editor = await findShareEditor(page);
+  const editor = await findShareEditor(page, 12_000);
   if (!editor) {
     notes.push("share_editor_missing");
     return {
@@ -203,6 +277,7 @@ export async function composeLinkedInDraft(
       draftId: working.id,
       notes,
       textPreview: preview,
+      imagePath: working.imagePath,
     };
   }
 
@@ -211,6 +286,38 @@ export async function composeLinkedInDraft(
   // Count as a page view / light action for safety pacing (not a published post)
   recordAction("page_view");
 
+  if (contentAttachImage()) {
+    const override =
+      options.imagePath?.trim() ||
+      process.env.CONTENT_IMAGE_PATH?.trim() ||
+      working.imagePath?.trim();
+    let imagePath = override;
+    if (!imagePath && options.runDir) {
+      try {
+        imagePath = defaultCardPath(options.runDir, working.id);
+        await renderDraftCard(working, imagePath);
+        working.imagePath = imagePath;
+        notes.push("image_card_rendered");
+      } catch (err) {
+        notes.push(
+          `image_card_failed:${err instanceof Error ? err.message : String(err)}`,
+        );
+        imagePath = undefined;
+      }
+    }
+    if (imagePath) {
+      working.imagePath = imagePath;
+      console.log(`[content-compose] Attaching image in share box:\n  ${imagePath}`);
+      const mediaNotes = await attachImageToComposer(page, imagePath);
+      notes.push(...mediaNotes);
+      console.log(`[content-compose] Media notes: ${mediaNotes.join(" | ")}`);
+    } else if (!notes.some((n) => n.startsWith("image_card_failed"))) {
+      notes.push("image_skipped_no_path");
+    }
+  } else {
+    notes.push("image_disabled");
+  }
+
   if (!allowPublish) {
     notes.push(
       options.dryRun
@@ -218,7 +325,8 @@ export async function composeLinkedInDraft(
         : "post_not_published_CONTENT_DO_PUBLISH_required",
     );
     const reviewMs =
-      options.reviewMs ?? (options.dryRun ? 12_000 : 4_000);
+      options.reviewMs ??
+      (options.dryRun ? (working.imagePath ? 20_000 : 12_000) : 4_000);
     console.log(
       `\n[content-compose] Draft typed into LinkedIn. Post button NOT clicked.` +
         ` Review for ~${Math.round(reviewMs / 1000)}s, then closing.\n`,
@@ -248,6 +356,7 @@ export async function composeLinkedInDraft(
       draftId: working.id,
       notes,
       textPreview: preview,
+      imagePath: working.imagePath,
     };
   }
 
@@ -260,6 +369,7 @@ export async function composeLinkedInDraft(
       draftId: working.id,
       notes,
       textPreview: preview,
+      imagePath: working.imagePath,
     };
   }
   await humanDelay("click");
@@ -272,6 +382,7 @@ export async function composeLinkedInDraft(
     draftId: working.id,
     notes,
     textPreview: preview,
+    imagePath: working.imagePath,
   };
 }
 

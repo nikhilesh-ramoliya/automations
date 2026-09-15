@@ -40,6 +40,23 @@
       "required": false,
       "default": false,
       "description": "Only with --no-dry-run: click Post after typing"
+    },
+    {
+      "name": "CONTENT_ATTACH_IMAGE",
+      "required": false,
+      "default": true,
+      "description": "Generate a title card and attach it in the share box"
+    },
+    {
+      "name": "CONTENT_IMAGE_AI",
+      "required": false,
+      "default": true,
+      "description": "Design card copy from ## Image in instructions.md via Cursor/AI"
+    },
+    {
+      "name": "CONTENT_IMAGE_PATH",
+      "required": false,
+      "description": "Optional PNG/JPG to attach instead of the generated card"
     }
   ],
   "run": {

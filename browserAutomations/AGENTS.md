@@ -121,7 +121,7 @@ research-topics → generate-posts (score + persist drafts)
 
 Uses **Cursor CLI** (`agent -p --mode ask`) to generate unique posts from `instructions.md`. Set `CURSOR_API_KEY` or run `agent login`. Optional OpenAI-compatible fallback. Artifacts: `data/content/<runId>/`.
 
-**Instructions:** edit `data/content/instructions.md` (**Interests** / Must / Never / Prefer). Interests drive topic + post themes; usage is tracked in `data/content/interest-usage.json` (auto). Loaded on research, generate, and compose; conflicting drafts are refined before score/compose.
+**Instructions:** edit `data/content/instructions.md` (**Interests** / Must / Never / Prefer / **Image**). Interests drive topic + post themes; usage is tracked in `data/content/interest-usage.json` (auto). **Image** rules (style, palette, headline, byline) design the 1200×627 title card at compose. Loaded on research, generate, and compose; conflicting drafts are refined before score/compose.
 
 **Schedule (Windows):** Mon & Thu 14:00 via Task Scheduler — `scripts/register-content-pipeline-schedule.ps1` (task `Lanatus-ContentPipeline-MonThu`).
 

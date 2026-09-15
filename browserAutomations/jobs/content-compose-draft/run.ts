@@ -7,11 +7,13 @@ import {
   pickDraftToCompose,
 } from "../../lib/content/compose.js";
 import {
+  contentAttachImage,
   envBool,
   envInt,
   isContentDryRun,
   snapshotContentConfigFromEnv,
 } from "../../lib/content/env.js";
+import { defaultCardPath, renderDraftCard } from "../../lib/content/image-card.js";
 import {
   artifactPath,
   ensureContentMeta,
@@ -74,12 +76,39 @@ export async function run(): Promise<JobRunResult> {
       } be clicked.\n`,
   );
 
+  let imagePath = process.env.CONTENT_IMAGE_PATH?.trim();
+  if (contentAttachImage() && !imagePath) {
+    try {
+      imagePath = defaultCardPath(runDir, draft.id);
+      await renderDraftCard(draft, imagePath);
+      draft.imagePath = imagePath;
+      writeJson(
+        artifactPath(runDir, CONTENT_ARTIFACTS.drafts),
+        drafts.map((d) => (d.id === draft.id ? { ...d, imagePath } : d)),
+      );
+      console.log(`[content-compose] Generated title card:\n  ${imagePath}\n`);
+    } catch (err) {
+      console.warn(
+        `[content-compose] Card render failed: ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+      );
+      imagePath = undefined;
+    }
+  } else if (imagePath) {
+    console.log(`[content-compose] Using image:\n  ${imagePath}\n`);
+  } else {
+    console.log("[content-compose] Image attach disabled or no path.\n");
+  }
+
   const result = await withLinkedInPage(
     async (page) =>
       composeLinkedInDraft(page, draft, {
         dryRun,
         reviewMs,
         doPublish,
+        runDir,
+        imagePath,
         topic: {
           id: draft.topicId,
           title: draft.topic,
@@ -105,11 +134,14 @@ export async function run(): Promise<JobRunResult> {
   writeJson(path.join(runDir, "compose.json"), composeLog);
   writeJson(
     artifactPath(runDir, CONTENT_ARTIFACTS.drafts),
-    drafts.map((d) =>
-      d.id === draft.id && result.published
-        ? { ...d, status: "published" as const }
-        : d,
-    ),
+    drafts.map((d) => {
+      if (d.id !== draft.id) return d;
+      return {
+        ...d,
+        ...(result.published ? { status: "published" as const } : {}),
+        ...(result.imagePath ? { imagePath: result.imagePath } : {}),
+      };
+    }),
   );
 
   markContentStep(runDir, "content-compose-draft");

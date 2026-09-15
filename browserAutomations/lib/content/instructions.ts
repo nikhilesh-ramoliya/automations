@@ -1,6 +1,6 @@
 /**
  * User-editable content instructions (`data/content/instructions.md`).
- * Required sections: Must / Never. Optional: Interests / Voice / Prefer / Notes.
+ * Required sections: Must / Never. Optional: Interests / Voice / Prefer / Notes / Image.
  */
 
 import fs from "node:fs";
@@ -68,6 +68,156 @@ export function instructionsPath(): string {
     : path.join(PROJECT_ROOT, explicit);
 }
 
+export type ImageCardCredits = {
+  name?: string;
+  role?: string;
+  handle?: string;
+};
+
+/** Parsed `## Image` block — credits plus generation rules. */
+export type ImageCardInstructions = ImageCardCredits & {
+  style?: string;
+  palette?: string;
+  layout?: string;
+  headlineHint?: string;
+  subheadHint?: string;
+  kickerHint?: string;
+  background?: string;
+  accent?: string;
+  /** Freeform bullets (style rules, must/never for the card). */
+  rules: string[];
+};
+
+const IMAGE_FIELD_ALIASES: Record<string, keyof Omit<ImageCardInstructions, "rules">> =
+  {
+    name: "name",
+    byline: "name",
+    role: "role",
+    title: "role",
+    handle: "handle",
+    username: "handle",
+    style: "style",
+    theme: "style",
+    palette: "palette",
+    colors: "palette",
+    colour: "palette",
+    layout: "layout",
+    headline: "headlineHint",
+    hook: "headlineHint",
+    subhead: "subheadHint",
+    subtitle: "subheadHint",
+    subheading: "subheadHint",
+    kicker: "kickerHint",
+    background: "background",
+    accent: "accent",
+  };
+
+function parseImageFieldLine(
+  line: string,
+): { key: keyof Omit<ImageCardInstructions, "rules">; value: string } | null {
+  const m = line.match(/^([A-Za-z][\w\s/-]*)\s*:\s*(.*)$/);
+  if (!m) return null;
+  const alias = m[1]!.trim().toLowerCase().replace(/[\s/-]+/g, "");
+  const key = IMAGE_FIELD_ALIASES[alias];
+  if (!key) return null;
+  return { key, value: m[2]!.trim() };
+}
+
+function extractImageSection(raw: string): string[] {
+  const lines: string[] = [];
+  let inImage = false;
+  for (const line of raw.split(/\r?\n/)) {
+    const heading = line.match(/^##\s+(\w[\w\s]*)\s*$/);
+    if (heading) {
+      inImage = /^image$/i.test(heading[1]!.trim());
+      continue;
+    }
+    if (!inImage) continue;
+    if (/^#/.test(line) || /^---\s*$/.test(line)) continue;
+    lines.push(line);
+  }
+  return lines;
+}
+
+/** Optional ## Image section: credits + style/layout/headline rules. */
+export function parseImageInstructions(raw: string): ImageCardInstructions {
+  const spec: ImageCardInstructions = { rules: [] };
+  for (const line of extractImageSection(raw)) {
+    const bullet = line.match(/^\s*[-*]\s+(.+)$/);
+    if (!bullet) continue;
+    const text = bullet[1]!.trim();
+    if (!text) continue;
+    const parsed = parseImageFieldLine(text);
+    if (parsed) {
+      if (parsed.value) spec[parsed.key] = parsed.value;
+      continue;
+    }
+    spec.rules.push(text);
+  }
+  return spec;
+}
+
+/** @deprecated use parseImageInstructions */
+export function parseImageCredits(raw: string): ImageCardCredits {
+  const spec = parseImageInstructions(raw);
+  return { name: spec.name, role: spec.role, handle: spec.handle };
+}
+
+export function resolveImageInstructions(
+  raw = loadContentInstructions().raw,
+): ImageCardInstructions {
+  const fromFile = parseImageInstructions(raw);
+  return {
+    ...fromFile,
+    name: process.env.CONTENT_IMAGE_NAME?.trim() || fromFile.name,
+    role: process.env.CONTENT_IMAGE_ROLE?.trim() || fromFile.role,
+    handle: process.env.CONTENT_IMAGE_HANDLE?.trim() || fromFile.handle,
+    style: process.env.CONTENT_IMAGE_STYLE?.trim() || fromFile.style,
+    palette: process.env.CONTENT_IMAGE_PALETTE?.trim() || fromFile.palette,
+    layout: process.env.CONTENT_IMAGE_LAYOUT?.trim() || fromFile.layout,
+    headlineHint:
+      process.env.CONTENT_IMAGE_HEADLINE?.trim() || fromFile.headlineHint,
+    background: process.env.CONTENT_IMAGE_BACKGROUND?.trim() || fromFile.background,
+    accent: process.env.CONTENT_IMAGE_ACCENT?.trim() || fromFile.accent,
+  };
+}
+
+export function resolveImageCredits(
+  raw = loadContentInstructions().raw,
+): ImageCardCredits {
+  const spec = resolveImageInstructions(raw);
+  return { name: spec.name, role: spec.role, handle: spec.handle };
+}
+
+export function imageInstructionsPromptBlock(
+  spec = resolveImageInstructions(),
+): string {
+  const parts: string[] = [
+    "TITLE CARD instructions (highest priority for the image — not the post body):",
+  ];
+  const add = (label: string, value?: string) => {
+    if (value) parts.push(`- ${label}: ${value}`);
+  };
+  add("Style", spec.style);
+  add("Palette", spec.palette);
+  add("Layout", spec.layout);
+  add("Headline", spec.headlineHint);
+  add("Subhead", spec.subheadHint);
+  add("Kicker", spec.kickerHint);
+  add("Background", spec.background);
+  add("Accent", spec.accent);
+  const byline = [spec.name, spec.role, spec.handle].filter(Boolean).join(" · ");
+  if (byline) parts.push(`- Byline (show on card): ${byline}`);
+  if (spec.rules.length) {
+    parts.push("Rules:");
+    for (const rule of spec.rules) parts.push(`- ${rule}`);
+  }
+  if (parts.length === 1) {
+    parts.push("(no extra image rules — use a clean dark editorial title card)");
+  }
+  return parts.join("\n");
+}
+
 export function parseInstructionsMarkdown(raw: string): InstructionSections {
   const sections = emptySections();
   let current: keyof InstructionSections | null = null;
@@ -78,6 +228,10 @@ export function parseInstructionsMarkdown(raw: string): InstructionSections {
     );
     if (heading) {
       current = heading[1]!.toLowerCase() as keyof InstructionSections;
+      continue;
+    }
+    if (/^##\s+/.test(line)) {
+      current = null;
       continue;
     }
     if (!current) continue;

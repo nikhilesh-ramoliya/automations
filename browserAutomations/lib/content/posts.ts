@@ -147,7 +147,11 @@ function mapGeneratedPosts(
       input.topic.interest;
     return attachScore(
       {
-        id: slugId("draft", `${input.topic.id}-${angle}-${i}`),
+        id: slugId(
+          "draft",
+          input.topic.title,
+          `${angle}-${i}-${process.env.CONTENT_RUN_ID ?? "run"}`,
+        ),
         topicId: input.topic.id,
         topic: input.topic.title,
         category: input.topic.category,
@@ -253,13 +257,25 @@ export async function generatePostsForTopics(input: {
   let usedAi = false;
 
   for (const topic of topics) {
-    const result = await generatePostsForTopic({
-      topic,
-      maxVariations: input.maxVariations,
-      preferAi: input.preferAi,
-    });
-    all.push(...result.drafts);
-    usedAi = usedAi || result.usedAi;
+    try {
+      const result = await generatePostsForTopic({
+        topic,
+        maxVariations: input.maxVariations,
+        preferAi: input.preferAi,
+      });
+      all.push(...result.drafts);
+      usedAi = usedAi || result.usedAi;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn(
+        `[content] Skipping topic "${topic.title}" after Cursor failure: ${message.slice(0, 220)}`,
+      );
+    }
+  }
+  if (all.length === 0) {
+    throw new Error(
+      "No drafts generated. Cursor API was unreachable for every topic — wait a minute and retry generate-posts.",
+    );
   }
 
   const unique = dedupeDrafts(all);

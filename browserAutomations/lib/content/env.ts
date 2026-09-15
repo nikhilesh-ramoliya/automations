@@ -33,6 +33,11 @@ export function isContentDryRun(): boolean {
   return envBool("CONTENT_DRY_RUN", envBool("DRY_RUN", true));
 }
 
+/** Attach a generated (or CONTENT_IMAGE_PATH) image in the share box. */
+export function contentAttachImage(): boolean {
+  return envBool("CONTENT_ATTACH_IMAGE", true);
+}
+
 /** Prefer Cursor (CURSOR_API_KEY) or OpenAI-compatible key. Set CONTENT_USE_AI=false to disable. */
 export function contentUseAi(): boolean {
   if (!envBool("CONTENT_USE_AI", true)) return false;
